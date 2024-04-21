@@ -152,27 +152,7 @@ class botStates(object):
         )
         return re
     
-    #等待读条完成
-    def waitGameLoding(self):
-        startTime = time.time()
-        self.logger.info("wait game loading" )
-        time.sleep(10)
-        while(1):
-            #wait loding
-            re = self.botPicCheck("fullScreen","gameLoading.bmp")
-            if re:
-                startTime = time.time()
-            else:
-                re2 = self.botPicCheck("inTownCheck","inTown.bmp")
-                if re2!=None:
-                    break
-                else:
-                    curTime = time.time()
-                    if curTime-startTime>30:
-                        self.logger.error("stack in game loading stage, bot exist")
-                        exit()
-        self.logger.info("game loading finished")
-        time.sleep(3)
+
     
     #切换角色至charcNo
     def switchCharacterTo(self,charcNo):
