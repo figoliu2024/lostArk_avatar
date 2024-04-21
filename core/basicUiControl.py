@@ -58,7 +58,7 @@ class basicUiCtrl(object):
         time.sleep(10)
         while(1):
             #wait loding
-            re = self.botPicCheck("fullScreen","gameLoading.bmp")
+            re = self.botPicCheck("loadingUiRegion","gameLoading.bmp")
             if re:
                 startTime = time.time()
             else:

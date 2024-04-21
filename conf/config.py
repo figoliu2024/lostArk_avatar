@@ -103,7 +103,8 @@ defaultUiRegions = {
     "quickCharacterCheck":[384,650,100,100],
     "EvnaTaskPanel":[329,281,300,600],
     "EvnaTaskStatuePanel":[1226,281,200,600],
-    "fullScreen":[26,69,1800,1000]
+    "fullScreen":[26,69,1800,1000],
+    "loadingUiRegion":[876,912,200,100],
 }
     
 defaultUiCoordi = {
