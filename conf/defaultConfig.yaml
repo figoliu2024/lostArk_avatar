@@ -1,0 +1,16 @@
+mainCharacter: 0  # must be in between number 0 to len[characters] - 1 [0 is the first character]
+GFN: True  # set True for Geforce Now users
+enableMultiCharacterMode: True  # this is lit
+enableLopang: True  # NOTE: you need to setup bifrost locations properly for this at very specific locations. Look up ^
+enableGuildDonation: True  # please make sure all your characters have a guild
+enableRapport: False  # NOTE: you need to setup bifrost no3 infront of a rapport NPC
+performance: False  # set True for lower-end PCs
+invisible: True
+healthPotAtPercent: 0.35  # health threshold to trigger potion
+auraRepair: True  # True if you have aura if not then for non-aura users: MUST have your character parked near a repairer in city before starting the script
+shortcutEnterChaos: True  # you want to use True
+useHealthPot: True  # you want to use True
+# You might not want to touch anything below because I assume you have your game setup same as mine :] otherwise something might not work properly!
+confidenceForGFN: 0.9
+screenResolutionX: 1920
+screenResolutionY: 1080

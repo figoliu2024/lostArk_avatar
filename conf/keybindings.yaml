@@ -1,0 +1,14 @@
+fishing: e
+castNet: d
+esc: esc
+pet-inventory-modifier: alt
+pet-inventory: p
+homeReturnMusitc: '8'
+leaveMusic: '9'
+interact: g  # change this if you have binded it to something else eg.mouse button
+move: left  # or right
+blink: space
+meleeAttack: c
+awakening: v
+healthPot: '5'  # important to put your regen potion on this button
+friends: u

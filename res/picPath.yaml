@@ -1,0 +1,9 @@
+mainWindowIcon_path  : res/pic/mainWindowIcon.bmp
+webGameIcon_path     : res/pic/webGame.bmp 
+startInWebGame_path  : res/pic/startInWebGame.bmp
+serverIn_path        : res/pic/serverIn.bmp
+warDancer_path       : res/pic/warDancer.bmp
+startGame_path       : res/pic/startGame.bmp
+shutdownOffer_path   : res/pic/shutdownOffer.bmp
+serverChoise_path    : res/pic/serverChoise.bmp
+disconnect_path      : res/pic/disconnect.bmp
