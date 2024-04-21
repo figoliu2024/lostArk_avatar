@@ -4,6 +4,8 @@ sys.path.append(".") #相对路径或绝对路径
 from core import gameWindowLocate
 from core import realManSim
 from core import gaodeNavig
+from core import basicUiControl as BUCPy
+
 
 from conf.config import defaultStatesConfig
 from conf.config import defaultUiRegions
@@ -20,15 +22,17 @@ import pyautogui
 class botStates(object):
 
     def __init__(self) -> None:
-        self.states = defaultStatesConfig
+        self.statesConfig = defaultStatesConfig
         self.UiRegions = defaultUiRegions
         self.UiCoordi = defaultUiCoordi
         self.Characters = defaultCharacters
         self.loPang_points = defaultLoPang_points
         
+        
         #初始化状态
         self.windowObj = gameWindowLocate.gameWindow()
         self.amapObj = gaodeNavig.amap()
+        self.lopangMoveObj = gaodeNavig.lopangMove()
         
         self.logger = logging.getLogger()
         self.logger.setLevel(logging.INFO)  # Log等级总开关 
@@ -54,12 +58,12 @@ class botStates(object):
         #         self.logger.error('未检测到游戏，尝试启动游戏失败，退出脚本！！！')
         #         exit()
         
-        self.states["windowTopLeft"] = [self.windowObj.topLeftX,self.windowObj.topLeftY]
-        print(self.states["windowTopLeft"])
+        self.statesConfig["windowTopLeft"] = [self.windowObj.topLeftX,self.windowObj.topLeftY]
+        print(self.statesConfig["windowTopLeft"])
         # 刷新所有UI的 region
         for k in self.UiRegions:
-            tmpX = self.UiRegions[k][0]+self.states["windowTopLeft"][0]
-            tmpY = self.UiRegions[k][1]+self.states["windowTopLeft"][1]
+            tmpX = self.UiRegions[k][0]+self.statesConfig["windowTopLeft"][0]
+            tmpY = self.UiRegions[k][1]+self.statesConfig["windowTopLeft"][1]
             self.UiRegions[k]= [tmpX,tmpY,self.UiRegions[k][2],self.UiRegions[k][3]]
             #debug
             # print(k, self.UiRegions[k])
@@ -70,13 +74,13 @@ class botStates(object):
             cellSize = len(self.UiCoordi[k])
             if cellSize>2:
                 for idx in range(cellSize):
-                    tmpX = self.UiCoordi[k][idx][0]+self.states["windowTopLeft"][0]
-                    tmpY = self.UiCoordi[k][idx][1]+self.states["windowTopLeft"][1]
+                    tmpX = self.UiCoordi[k][idx][0]+self.statesConfig["windowTopLeft"][0]
+                    tmpY = self.UiCoordi[k][idx][1]+self.statesConfig["windowTopLeft"][1]
                     self.UiCoordi[k][idx][0] = tmpX 
                     self.UiCoordi[k][idx][1] = tmpY
             else:
-                tmpX = self.UiCoordi[k][0]+self.states["windowTopLeft"][0]
-                tmpY = self.UiCoordi[k][1]+self.states["windowTopLeft"][1]
+                tmpX = self.UiCoordi[k][0]+self.statesConfig["windowTopLeft"][0]
+                tmpY = self.UiCoordi[k][1]+self.statesConfig["windowTopLeft"][1]
                 self.UiCoordi[k][0] = tmpX 
                 self.UiCoordi[k][1] = tmpY
             #debug
@@ -88,16 +92,19 @@ class botStates(object):
         for k in self.loPang_points:
             cellSize = len(self.loPang_points[k])
             for idx in range(cellSize):
-                tmpX = self.loPang_points[k][idx][0]+self.states["windowTopLeft"][0]
-                tmpY = self.loPang_points[k][idx][1]+self.states["windowTopLeft"][1]
+                tmpX = self.loPang_points[k][idx][0]+self.statesConfig["windowTopLeft"][0]
+                tmpY = self.loPang_points[k][idx][1]+self.statesConfig["windowTopLeft"][1]
                 self.loPang_points[k][idx][0] = tmpX 
                 self.loPang_points[k][idx][1] = tmpY
 
+        # 加载基本控制库
+        self.basicUiCtrlObj = BUCPy.basicUiCtrl(self.UiRegions, self.UiCoordi, self.statesConfig, self.logger)
         
         # 加载导航参数库
-        self.amapObj.initAmap(self.UiRegions, self.UiCoordi)
+        self.amapObj.initAmap(self.UiRegions, self.UiCoordi, self.basicUiCtrlObj, self.statesConfig)
         
-        
+        # 加载罗庞任务移动对象
+        self.lopangMoveObj.initLopangMove(self.UiRegions, self.UiCoordi, self.basicUiCtrlObj, self.loPang_points)
         # 载入角色技能库
                   
         
@@ -105,10 +112,10 @@ class botStates(object):
         dc = pyautogui.locateOnScreen(
             "./res/pic/dc.png",
             region=self.UiRegions["regions"]["center"],
-            confidence=self.states["confidenceForGFN"],
+            confidence=self.statesConfig["confidenceForGFN"],
         )
         ok = pyautogui.locateCenterOnScreen(
-            "./res/pic/ok.png", region=self.states["regions"]["center"], confidence=0.75
+            "./res/pic/ok.png", region=self.statesConfig["regions"]["center"], confidence=0.75
         )
 
         if dc != None or ok != None:
@@ -117,7 +124,7 @@ class botStates(object):
             dc.save("./log/dc_" + str(currentTime) + ".png")
             self.logger.error("disconnection detected...currentTime : {} dc:{} ok:{} ".format(
                     currentTime, dc, ok,))
-            self.states["gameOfflineCount"] = self.states["gameOfflineCount"] + 1
+            self.statesConfig["gameOfflineCount"] = self.statesConfig["gameOfflineCount"] + 1
             return True
         else:
             return False
@@ -138,52 +145,41 @@ class botStates(object):
             )
         return inChaos   
     
-    def botUiLeftClick(self,UiDictName,idx):
-        if len(self.UiCoordi[UiDictName])==2:
-            realManSim.manSimMoveAndLeftClick(self.UiCoordi[UiDictName][0],self.UiCoordi[UiDictName][1])
-        else:
-            realManSim.manSimMoveAndLeftClick(self.UiCoordi[UiDictName][idx][0],self.UiCoordi[UiDictName][idx][1])
+    # def botUiLeftClick(self,UiDictName,idx):
+    #     if len(self.UiCoordi[UiDictName])==2:
+    #         realManSim.manSimMoveAndLeftClick(self.UiCoordi[UiDictName][0],self.UiCoordi[UiDictName][1])
+    #     else:
+    #         realManSim.manSimMoveAndLeftClick(self.UiCoordi[UiDictName][idx][0],self.UiCoordi[UiDictName][idx][1])
     
-    def botPicCheck(self,regionName, pic):
-        re = pyautogui.locateCenterOnScreen(
-            self.picPath+pic,
-            confidence=0.8,
-            region=self.UiRegions[regionName],
-        )
-        return re
+    # def botPicCheck(self,regionName, pic):
+    #     re = pyautogui.locateCenterOnScreen(
+    #         self.picPath+pic,
+    #         confidence=0.8,
+    #         region=self.UiRegions[regionName],
+    #     )
+    #     return re
     
 
     
     #切换角色至charcNo
     def switchCharacterTo(self,charcNo):
         realManSim.manSimPressKey("esc")
-        self.botUiLeftClick("fastLoginOtherCharc",0)
-        self.botUiLeftClick("charPositions",charcNo)
-        self.botUiLeftClick("login",0)
-        self.botUiLeftClick("login",0)
+        self.basicUiCtrlObj.botUiLeftClick("fastLoginOtherCharc",0)
+        self.basicUiCtrlObj.botUiLeftClick("charPositions",charcNo)
+        self.basicUiCtrlObj.botUiLeftClick("login",0)
+        self.basicUiCtrlObj.botUiLeftClick("login",0)
         realManSim.sleep(1000,2000)
-        re = self.botPicCheck("center","ok.bmp")
+        re = self.basicUiCtrlObj.botPicCheck("center","ok.bmp")
         if re != None:
             x, y = re
             realManSim.manSimMoveAndLeftClick(x, y)
 
-        self.waitGameLoding()
-        self.logger.info("切换角色至:charc%d成功" %charcNo)
+        self.basicUiCtrlObj.waitGameLoding()
+        self.basicUiCtrlObj.logger.info("切换角色至:charc%d成功" %charcNo)
         return True
 
     
-    #点击确定
-    def clickOkButton(self):
-        time.sleep(1)
-        ok = pyautogui.locateCenterOnScreen(
-        "res/pic/ok.bmp", region=self.UiRegions["center"], confidence=0.75
-        )
-        if ok != None:
-            x, y = ok
-            realManSim.manSimMoveAndLeftClick(x=x, y=y)
-            return True
-        else:
-            return False
+
         
         
     #检查当前角色是否是0号    
@@ -198,7 +194,7 @@ class botStates(object):
         realManSim.manSimPressKey("esc")
         # print(isCharc0)
         if isCharc0 != None:
-            self.states["currentCharacter"] = 0
+            self.statesConfig["currentCharacter"] = 0
             print("is charc0")
             return True
         else:
@@ -219,10 +215,10 @@ class botStates(object):
     #             self.waitGameLoding()
     #             return True
     #         else:
-    #             self.logger.error("charctor[%s]-> failed transfer to island lopang " %self.states["currentCharacter"] )
+    #             self.logger.error("charctor[%s]-> failed transfer to island lopang " %self.statesConfig["currentCharacter"] )
     #             return False
     #     else:
-    #         self.logger.error("charctor[%s]-> didn't find lopang bifrost point" %self.states["currentCharacter"] )
+    #         self.logger.error("charctor[%s]-> didn't find lopang bifrost point" %self.statesConfig["currentCharacter"] )
     #         return False
     
 if __name__ == '__main__':

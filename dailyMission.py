@@ -10,7 +10,7 @@ from core import realManSim
 
 
 def doGuildDonation(botStatesObj):
-    botStatesObj.logger.info("charctor:%s-> start guildDono" %botStatesObj.states["currentCharacter"] )
+    botStatesObj.logger.info("charctor:%s-> start guildDono" %botStatesObj.statesConfig["currentCharacter"] )
     #打卡工会界面
     realManSim.manSimMultiKey("alt","u") 
     ok = pyautogui.locateCenterOnScreen(
@@ -59,78 +59,141 @@ def doGuildDonation(botStatesObj):
     time.sleep(1)
     realManSim.manSimPressKey("esc")  # 退出捐赠
     time.sleep(1)
-    botStatesObj.logger.info("charctor:%s-> finish guildDono" %botStatesObj.states["currentCharacter"] )
+    botStatesObj.logger.info("charctor:%s-> finish guildDono" %botStatesObj.statesConfig["currentCharacter"] )
     
 #接受日常
 def acceptLopangDaily(botStatesObj):
-    botStatesObj.logger.info("charctor:%s-> accept Lopang Daily tasks" %botStatesObj.states["currentCharacter"] )
+    botStatesObj.logger.info("charctor:%s-> accept Lopang Daily tasks" %botStatesObj.statesConfig["currentCharacter"] )
     #打开日常任务界面
     realManSim.manSimMultiKey("alt","j") 
+    
+    #检查是否在收藏夹标签
+    re = botStatesObj.basicUiCtrlObj.botPicCheck("fullScreen","favoritesTaskLists.bmp")
+    if re==None:
+        #切换至收藏夹标签
+        re = botStatesObj.basicUiCtrlObj.botPicCheck("fullScreen","allTaskLists.bmp")
+        x,y = re
+        realManSim.manSimMoveAndLeftClick(x, y)
+        re = botStatesObj.basicUiCtrlObj.botPicCheck("fullScreen","favoritesTaskListsInTab.bmp")
+        x,y = re
+        realManSim.manSimMoveAndLeftClick(x, y)
+        time.sleep(1)
+    
     #判断角色是否已经完成日常
-    re = botStatesObj.botPicCheck("EvnaTaskStatuePanel","taskCompleted.bmp")
+    re = botStatesObj.basicUiCtrlObj.botPicCheck("EvnaTaskStatuePanel","taskCompleted.bmp")
     if re != None:
         #角色已经完成了，直接跳过
-        botStatesObj.logger.info("charctor[%s]-> already finished Lopang Daily tasks, skip" %botStatesObj.states["currentCharacter"] )
+        botStatesObj.logger.info("charctor[%s]-> already finished Lopang Daily tasks, skip" %botStatesObj.statesConfig["currentCharacter"] )
         return False
     else:
         #接受日常1
-        re = botStatesObj.botPicCheck("EvnaTaskPanel","taskARTY.bmp")
+        re = botStatesObj.basicUiCtrlObj.botPicCheck("EvnaTaskPanel","taskARTY.bmp")
         if re != None:
             x,y = re
             x = x+832
             realManSim.manSimMoveAndLeftClick(x, y)
         else:
-            botStatesObj.logger.error("charctor[%s]-> didn't find lopang task" %botStatesObj.states["currentCharacter"] )
+            botStatesObj.logger.error("charctor[%s]-> didn't find lopang task" %botStatesObj.statesConfig["currentCharacter"] )
             return False
         #接受日常2
-        re = botStatesObj.botPicCheck("EvnaTaskPanel","taskBL.bmp")
+        re = botStatesObj.basicUiCtrlObj.botPicCheck("EvnaTaskPanel","taskBL.bmp")
         if re != None:
             x,y = re
             x = x+832
             realManSim.manSimMoveAndLeftClick(x, y)
         else:
-            botStatesObj.logger.error("charctor[%s]-> didn't find lopang task" %botStatesObj.states["currentCharacter"] )
+            botStatesObj.logger.error("charctor[%s]-> didn't find lopang task" %botStatesObj.statesConfig["currentCharacter"] )
             return False
         #接受日常3
-        re = botStatesObj.botPicCheck("EvnaTaskPanel","taskXSR.bmp")
+        re = botStatesObj.basicUiCtrlObj.botPicCheck("EvnaTaskPanel","taskXSR.bmp")
         if re != None:
             x,y = re
             x = x+832
             realManSim.manSimMoveAndLeftClick(x, y)
         else:
-            botStatesObj.logger.error("charctor[%s]-> didn't find lopang task" %botStatesObj.states["currentCharacter"] )
+            botStatesObj.logger.error("charctor[%s]-> didn't find lopang task" %botStatesObj.statesConfig["currentCharacter"] )
             return False
 
-        botStatesObj.logger.info("charctor:%s-> accept Lopang Daily tasks success :)" %botStatesObj.states["currentCharacter"] )
+        botStatesObj.logger.info("charctor:%s-> accept Lopang Daily tasks success :)" %botStatesObj.statesConfig["currentCharacter"] )
         realManSim.manSimPressKey("esc")  # 退出任务界面
         return True
 
 
 #执行lopang快递任务
 def doLopang(botStatesObj):
-    botStatesObj.logger.info("charctor:%s-> start Lopang express" %botStatesObj.states["currentCharacter"] )
+    botStatesObj.logger.info("charctor:%s-> start Lopang express" %botStatesObj.statesConfig["currentCharacter"] )
     realManSim.sleep(1000, 2000)
     acceptLopangDaily(botStatesObj)
     realManSim.sleep(1000, 2000)
-    botStatesObj.logger.info("charctor:%s-> bifrost Go To lopang island" %botStatesObj.states["currentCharacter"] )
-    re = botStatesObj.bifrostGoTo("loPang_Bifrost.bmp")
+    
+    #传送lopang
+    botStatesObj.logger.info("charctor:%s-> bifrost Go To lopang island" %botStatesObj.statesConfig["currentCharacter"] )
+    re = botStatesObj.amapObj.bifrostGoTo("loPang_Bifrost.bmp")
+    if not re:
+        return False
+    #位于lopang岛，开始接快递
+    realManSim.manSimPressKey("G")
+    botStatesObj.lopangMoveObj.runToStartPoint()
+    botStatesObj.lopangMoveObj.runToBenongTerminal()
+    realManSim.manSimPressKey("G")
+    botStatesObj.lopangMoveObj.runToARTYTerminal()
+    realManSim.manSimPressKey("G")
+    
+    re = botStatesObj.amapObj.bifrostGoTo("XSR_Bifrost.bmp")
+    if not re:
+       return False
+    realManSim.manSimPressKey("G")
+    time.sleep(1)
+    realManSim.manSimMultiKey("shift","G") 
+    time.sleep(2)
+    realManSim.manSimPressKey("G")
+    realManSim.manSimPressKey("G")
+    time.sleep(1)
+    
+    # 班船旅行至阿尔泰因
+    re = botStatesObj.amapObj.linerGoTo("harbor_ARTY.bmp")
+    if not re:
+        return False
+        
+    # ARTY开始上马
+    realManSim.manSimPressKey("F1")
+    time.sleep(3)
+    botStatesObj.lopangMoveObj.runToBakadi()
+    realManSim.manSimPressKey("G")
+    time.sleep(1)
+    realManSim.manSimMultiKey("shift","G") 
+    time.sleep(2)
+    realManSim.manSimPressKey("G")
+    realManSim.manSimPressKey("G")
+    time.sleep(1)    
+    
+    # 班船旅行至贝隆
+    re = botStatesObj.amapObj.linerGoTo("harbor_benong.bmp")
     if not re:
         return False
     
-    #位于lopang岛，开始接快递
+    botStatesObj.lopangMoveObj.runToTayerna()
     realManSim.manSimPressKey("G")
+    time.sleep(1)
+    realManSim.manSimMultiKey("shift","G") 
+    time.sleep(2)
+    realManSim.manSimPressKey("G")
+    realManSim.manSimPressKey("G")
+    time.sleep(1)       
     
+    # 快递任结束 
+    botStatesObj.logger.info("charctor:%s-> Lopang express completed success ..." %botStatesObj.statesConfig["currentCharacter"] )
     
     
     
 
 #开始日常
-def startDaily():
+def startDaily(guildDonoEnable, lopangEnable):
     botStatesObj = botStates.botStates()
     botStatesObj.initBot()
     
     # save bot start time
-    botStatesObj.states["botStartTime"] = int(time.time_ns() / 1000000)
+    botStatesObj.statesConfig["botStartTime"] = int(time.time_ns() / 1000000)
     botStatesObj.logger.info("avator start daily task")
     
     x,y = botStatesObj.UiCoordi["screenCenter"]
@@ -142,19 +205,24 @@ def startDaily():
     
     # start bot run daily
     while True:
-        if botStatesObj.states["multiCharacterMode"]:        
-            curChar = "charc"+str(botStatesObj.states["currentCharacter"])
+        if botStatesObj.statesConfig["multiCharacterMode"]:        
+            curChar = "charc"+str(botStatesObj.statesConfig["currentCharacter"])
+            
             # guild dono
-            if botStatesObj.Characters[curChar]["guildDonation"]:
+            if botStatesObj.Characters[curChar]["guildDonation"] and guildDonoEnable:
                 doGuildDonation(botStatesObj)
-                botStatesObj.states["finishedCharacter"] = botStatesObj.states["finishedCharacter"]+1
             # luopang daily
-            #多角色模式
-            if botStatesObj.states["finishedCharacter"] < botStatesObj.states["numberOfCharacters"]:
+            if botStatesObj.Characters[curChar]["lopang"] and lopangEnable:
+                doLopang(botStatesObj)
+                
+            botStatesObj.statesConfig["finishedCharacter"] = botStatesObj.statesConfig["finishedCharacter"]+1
+            
+            # 多角色模式
+            if botStatesObj.statesConfig["finishedCharacter"] < botStatesObj.statesConfig["numberOfCharacters"]:
                 #继续执行剩余角色               
                 #切换至下个角色
-                botStatesObj.states["currentCharacter"] = botStatesObj.states["currentCharacter"]+1
-                botStatesObj.switchCharacterTo(botStatesObj.states["currentCharacter"])
+                botStatesObj.statesConfig["currentCharacter"] = botStatesObj.statesConfig["currentCharacter"]+1
+                botStatesObj.switchCharacterTo(botStatesObj.statesConfig["currentCharacter"])
             else:
                 #退出
                 botStatesObj.logger.info("All character guild dono finished ")
@@ -163,8 +231,9 @@ def startDaily():
     botStatesObj.logger.info("All daily task finished ")            
 
 if __name__ == "__main__":
-
-    startDaily()
+    guildDonoEnable = False
+    lopangEnable = True
+    startDaily(guildDonoEnable, lopangEnable)
 
 
 #debug

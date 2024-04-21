@@ -6,11 +6,12 @@ import time
 class basicUiCtrl(object):
     
     
-    def __init__(self,UiRegions,UiCoordi,states) -> None:
+    def __init__(self,UiRegions,UiCoordi,states,logger) -> None:
         self.UiRegions = UiRegions
         self.UiCoordi = UiCoordi
         self.states = states
         self.picPath = self.states["picPath"]
+        self.logger = logger
 
     def botUiLeftClick(self,UiDictName,idx):
         '''
@@ -32,6 +33,21 @@ class basicUiCtrl(object):
         )
         return re        
         
+    #点击确定
+    def clickOkButton(self):
+        '''
+        点击确定
+        '''    
+        time.sleep(1)
+        ok = pyautogui.locateCenterOnScreen(
+        "res/pic/ok.bmp", region=self.UiRegions["center"], confidence=0.75
+        )
+        if ok != None:
+            x, y = ok
+            realManSim.manSimMoveAndLeftClick(x=x, y=y)
+            return True
+        else:
+            return False
    
     def waitGameLoding(self):
         '''
@@ -56,7 +72,22 @@ class basicUiCtrl(object):
                         exit()
         self.logger.info("game loading finished")
         time.sleep(3)
+    
+    def cleanUi(self):
+        '''
+        退出菜单界面
+        '''         
+        realManSim.manSimPressKey("esc")
+        time.sleep(1)
+        re = self.botPicCheck("fullScreen","gameMenu.bmp")
         
+        if re!=None:
+            realManSim.manSimPressKey("esc")
+
+        time.sleep(1)
+        return    
+               
+    
 # ## Test bench 
 if __name__ == "__main__":
     print("start basicUiCtrl Test")

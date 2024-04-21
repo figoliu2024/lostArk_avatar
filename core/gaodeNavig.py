@@ -11,6 +11,7 @@ import core.aStarFigo as aStarFigo
 from core import realManSim
 from core import botStates as botPy
 from lib import libMathFigo
+from core import basicUiControl as BUCPy
 
 
 class cell(object):
@@ -47,14 +48,15 @@ class amap(object):
         self.grid_width = 0
         self.grid_height = 0
 
-    def initAmap(self,UiRegions,UiCoordi):
+    def initAmap(self,UiRegions,UiCoordi,basicUiCtrlObj,statesConfig):
         '''
         amap对象初始化
         '''
         print ("initiation Amap")
         self.UiRegions = UiRegions
         self.UiCoordi = UiCoordi
-
+        self.basicUiCtrlObj = basicUiCtrlObj
+        self.statesConfig = statesConfig
 
   
     def loadBigMap(self, mapName):
@@ -158,29 +160,79 @@ class amap(object):
 
     #彩虹桥传送
     def bifrostGoTo(self,destName):
-        self.botUiLeftClick("bifrost",0)
+        # self.basicUiCtrlObj.cleanUi()
         
-        re = self.botPicCheck("fullScreen",destName)
+        self.basicUiCtrlObj.botUiLeftClick("bifrost",0)
+        time.sleep(2)
+        re = self.basicUiCtrlObj.botPicCheck("fullScreen",destName)
         if re != None:
             x,y = re
+            reCD = pyautogui.locateCenterOnScreen(
+                self.picPath+"bifrostInCD.bmp",
+                confidence=0.8,
+                region=[x,y-25,400,60],
+            ) 
+            if reCD != None:
+                #已经CD了
+                self.basicUiCtrlObj.logger.info("charctor[%s]-> failed bifrost go to %s, because of already CD " %(self.statesConfig["currentCharacter"], destName))
+                return False           
             x = x+328
             realManSim.manSimMoveAndLeftClick(x, y)
-            re = self.clickOkButton()
+            re = self.basicUiCtrlObj.clickOkButton()
             if re:
-                self.waitGameLoding()
+                self.basicUiCtrlObj.waitGameLoding()
                 return True
             else:
-                self.logger.error("charctor[%s]-> failed transfer to island lopang " %self.states["currentCharacter"] )
+                self.basicUiCtrlObj.logger.info("charctor[%s]-> failed transfer to island lopang " %self.statesConfig["currentCharacter"] )
                 return False
         else:
-            self.logger.error("charctor[%s]-> didn't find lopang bifrost point" %self.states["currentCharacter"] )
+            self.basicUiCtrlObj.logger.info("charctor[%s]-> didn't find lopang bifrost point" %self.statesConfig["currentCharacter"] )
             return False
+        
+    #航海传送
+    def linerGoTo(self,destName):
+        # self.basicUiCtrlObj.cleanUi()
+        realManSim.manSimPressKey("M")
+        time.sleep(1)
+        #点击航海传送
+        re = self.basicUiCtrlObj.botPicCheck("fullScreen","linerTrans.bmp")
+        if re != None:
+            x,y = re
+            realManSim.manSimMoveAndLeftClick(x, y)
+        else:
+            self.basicUiCtrlObj.logger.info("charctor[%s]-> didn't find linerTrans button" %self.statesConfig["currentCharacter"] )
+            return False            
+        time.sleep(1)
+        #点击目的地
+        re = self.basicUiCtrlObj.botPicCheck("fullScreen",destName)
+        if re != None:
+            x,y = re
+            realManSim.manSimMoveAndLeftClick(x, y)
+        else:
+            self.basicUiCtrlObj.logger.info("charctor[%s]-> didn't find destination %s" %(self.statesConfig["currentCharacter"],destName))
+            return False           
+        time.sleep(1)
+        #点击上船
+        re = self.basicUiCtrlObj.botPicCheck("fullScreen","boarding.bmp")
+        if re != None:
+            x,y = re
+            realManSim.manSimMoveAndLeftClick(x, y)
+        else:
+            self.basicUiCtrlObj.logger.info("charctor[%s]-> didn't find boarding.bmp to %s" %(self.statesConfig["currentCharacter"],destName))
+            return False                 
+        
+        #等待读条
+        self.basicUiCtrlObj.waitGameLoding()
+        
+        self.basicUiCtrlObj.logger.info("charctor[%s]-> liner Go To to %s successs ...." %(self.statesConfig["currentCharacter"],destName))
+        return True
+        
 
 class lopangMove(object):
     def __init__(self) -> None:
         self.picPath = "./res/pic/"      
     
-    def initLopangMove(self,UiRegions,UiCoordi,loPang_points):
+    def initLopangMove(self,UiRegions,UiCoordi,basicUiCtrlObj,loPang_points):
         '''
         lopang对象初始化
         '''
@@ -263,6 +315,57 @@ class lopangMove(object):
         else:
             print("check ARTY Terminal failed, bot exist!!")
             exit()               
+
+    def runToBakadi(self):
+        print("move from ARTY to Bakadi ..")
+        for k in self.loPang_points["ARTYToBakadi"]:
+            x = k[0]
+            y = k[1]
+            print("move to the [x:%d y:%d] "%(x,y))
+            realManSim.manSimMoveAndRightClick(x, y)
+            time.sleep(2)
+            
+        re = self.pointPicCheck("fullScreen", "Bakadi.bmp")
+        
+        if re != None:
+            dist = libMathFigo.eucliDist(re,self.rolePosition)
+            print("Distance from role to Bakadi is: %d" %dist)
+            if dist<360:
+                print("move from start Point to Bakadi success..")
+            else:
+                x,y = re
+                realManSim.manSimMoveAndRightClick(x, y+269)
+                print("try last time move to Bakadi success..")
+                time.sleep(2)     
+        else:
+            print("check Bakadi failed, bot exist!!")
+            exit()          
+            
+    def runToTayerna(self):
+        print("move from Benong to Tayerna ..")
+        for k in self.loPang_points["BenongToTayerna"]:
+            x = k[0]
+            y = k[1]
+            print("move to the [x:%d y:%d] "%(x,y))
+            realManSim.manSimMoveAndRightClick(x, y)
+            time.sleep(2)
+            
+        re = self.pointPicCheck("fullScreen", "Tayerna.bmp")
+        
+        if re != None:
+            dist = libMathFigo.eucliDist(re,self.rolePosition)
+            print("Distance from role to Tayerna is: %d" %dist)
+            if dist<360:
+                print("move from start Point to Tayerna success..")
+            else:
+                x,y = re
+                realManSim.manSimMoveAndRightClick(x, y+269)
+                print("try last time move to Tayerna success..")
+                time.sleep(2)     
+        else:
+            print("check Tayerna failed, bot exist!!")
+            exit()         
+ 
         
 # bmp地图转化为产生二值化地图
 def binMapGen(mapPath, outMapName):
@@ -309,21 +412,60 @@ if __name__ == "__main__":
     # luopangPath = f"res/map/lopang.bmp"
     # binMapGen(luopangPath,"luopang.txt")
     botStatesObj = botPy.botStates()
-    lopangMoveObj = lopangMove()
     
     botStatesObj.initBot()
     
-    # lopangMoveObj.initLopangMove(botStatesObj.UiRegions, botStatesObj.UiCoordi, botStatesObj.loPang_points)
+    
+    # re = botStatesObj.amapObj.bifrostGoTo("loPang_Bifrost.bmp")
+    # if not re:
+    #     exit()
     # realManSim.manSimPressKey("G")
-    # lopangMoveObj.runToStartPoint()
-    # lopangMoveObj.runToBenongTerminal()
+    # botStatesObj.lopangMoveObj.runToStartPoint()
+    # botStatesObj.lopangMoveObj.runToBenongTerminal()
     # realManSim.manSimPressKey("G")
-    # lopangMoveObj.runToARTYTerminal()
+    # botStatesObj.lopangMoveObj.runToARTYTerminal()
     # realManSim.manSimPressKey("G")
     
-    re = botStatesObj.bifrostGoTo("XSR_Bifrost.bmp")
-    realManSim.manSimPressKey("G")
-    realManSim.manSimMultiKey("shift","G") 
-    realManSim.manSimPressKey("G")
+    # re = botStatesObj.amapObj.bifrostGoTo("XSR_Bifrost.bmp")
+    # if not re:
+    #     exit()
+    # realManSim.manSimPressKey("G")
+    # time.sleep(1)
+    # realManSim.manSimMultiKey("shift","G") 
+    # time.sleep(2)
+    # realManSim.manSimPressKey("G")
+    # realManSim.manSimPressKey("G")
+    # time.sleep(1)
     
-    #班船旅行脚本
+    #班船旅行至阿尔泰因
+    # re = botStatesObj.amapObj.linerGoTo("harbor_ARTY.bmp")
+    # if not re:
+    #     exit()
+        
+    #ARTY开始上马
+    # realManSim.manSimPressKey("F1")
+    # time.sleep(3)
+    # botStatesObj.lopangMoveObj.runToBakadi()
+    # realManSim.manSimPressKey("G")
+    # time.sleep(1)
+    # realManSim.manSimMultiKey("shift","G") 
+    # time.sleep(2)
+    # realManSim.manSimPressKey("G")
+    # realManSim.manSimPressKey("G")
+    # time.sleep(1)    
+    
+    #班船旅行至贝隆
+    # re = botStatesObj.amapObj.linerGoTo("harbor_benong.bmp")
+    # if not re:
+    #     exit()
+    
+    # botStatesObj.lopangMoveObj.runToTayerna()
+    # realManSim.manSimPressKey("G")
+    # time.sleep(1)
+    # realManSim.manSimMultiKey("shift","G") 
+    # time.sleep(2)
+    # realManSim.manSimPressKey("G")
+    # realManSim.manSimPressKey("G")
+    # time.sleep(1)       
+    
+    #快递任结束 
