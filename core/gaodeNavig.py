@@ -339,7 +339,7 @@ class lopangMove(object):
                 time.sleep(2)     
         else:
             print("check Bakadi failed, bot exist!!")
-            exit()          
+            # exit()          
             
     def runToTayerna(self):
         print("move from Benong to Tayerna ..")

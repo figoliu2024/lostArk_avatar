@@ -204,7 +204,7 @@ defaultCharacters = {
         "class": "Artist", #墨灵
         "ilvl-endless": 1477,
         "ilvl-aor": 1477,
-        "lopang": False,
+        "lopang": True,
         "guildDonation": True,
         "rapport": False,
         "abilities": [],
@@ -214,7 +214,7 @@ defaultCharacters = {
         "class": "Shadowhunter",
         "ilvl-endless": 1430,
         "ilvl-aor": 1430,
-        "lopang": False,
+        "lopang": True,
         "guildDonation": True,
         "rapport": False,
         "abilities": [],

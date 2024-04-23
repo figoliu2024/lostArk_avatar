@@ -13,6 +13,7 @@ def doGuildDonation(botStatesObj):
     botStatesObj.logger.info("charctor:%s-> start guildDono" %botStatesObj.statesConfig["currentCharacter"] )
     #打卡工会界面
     realManSim.manSimMultiKey("alt","u") 
+    time.sleep(2)
     ok = pyautogui.locateCenterOnScreen(
         "res/pic/ok.bmp", region=botStatesObj.UiRegions["center"], confidence=0.75
     )
@@ -20,14 +21,14 @@ def doGuildDonation(botStatesObj):
         x, y = ok
         realManSim.manSimMoveAndLeftClick(x=x, y=y)
 
-    time.sleep(1)
+    time.sleep(2)
     
     #点击公会捐赠
     realManSim.manSimMoveAndLeftClick(botStatesObj.UiCoordi["donoTap"][0],botStatesObj.UiCoordi["donoTap"][1])
     realManSim.manSimMoveAndLeftClick(botStatesObj.UiCoordi["guildDono"][0],botStatesObj.UiCoordi["guildDono"][1])
     realManSim.manSimMoveAndLeftClick(botStatesObj.UiCoordi["donoSilver"][0],botStatesObj.UiCoordi["donoSilver"][1])
     realManSim.manSimPressKey("esc")  # 退出捐赠
-    time.sleep(1)
+    time.sleep(2)
     
     #支援研究
     realManSim.manSimMoveAndLeftClick(botStatesObj.UiCoordi["researchTap"][0],botStatesObj.UiCoordi["researchTap"][1])
@@ -56,9 +57,9 @@ def doGuildDonation(botStatesObj):
             realManSim.manSimPressKey("esc")  # 退出捐赠
             time.sleep(0.8)
 
-    time.sleep(1)
+    time.sleep(2)
     realManSim.manSimPressKey("esc")  # 退出捐赠
-    time.sleep(1)
+    time.sleep(2)
     botStatesObj.logger.info("charctor:%s-> finish guildDono" %botStatesObj.statesConfig["currentCharacter"] )
     
 #接受日常
@@ -77,7 +78,7 @@ def acceptLopangDaily(botStatesObj):
         re = botStatesObj.basicUiCtrlObj.botPicCheck("fullScreen","favoritesTaskListsInTab.bmp")
         x,y = re
         realManSim.manSimMoveAndLeftClick(x, y)
-        time.sleep(1)
+        time.sleep(2)
     
     #判断角色是否已经完成日常
     re = botStatesObj.basicUiCtrlObj.botPicCheck("EvnaTaskStatuePanel","taskCompleted.bmp")
@@ -143,12 +144,12 @@ def doLopang(botStatesObj):
     if not re:
        return False
     realManSim.manSimPressKey("G")
-    time.sleep(1)
+    time.sleep(2)
     realManSim.manSimMultiKey("shift","G") 
     time.sleep(2)
     realManSim.manSimPressKey("G")
     realManSim.manSimPressKey("G")
-    time.sleep(1)
+    time.sleep(2)
     
     # 班船旅行至阿尔泰因
     re = botStatesObj.amapObj.linerGoTo("harbor_ARTY.bmp")
@@ -160,12 +161,12 @@ def doLopang(botStatesObj):
     time.sleep(3)
     botStatesObj.lopangMoveObj.runToBakadi()
     realManSim.manSimPressKey("G")
-    time.sleep(1)
+    time.sleep(2)
     realManSim.manSimMultiKey("shift","G") 
     time.sleep(2)
     realManSim.manSimPressKey("G")
     realManSim.manSimPressKey("G")
-    time.sleep(1)    
+    time.sleep(2)    
     
     # 班船旅行至贝隆
     re = botStatesObj.amapObj.linerGoTo("harbor_benong.bmp")
@@ -174,12 +175,12 @@ def doLopang(botStatesObj):
     
     botStatesObj.lopangMoveObj.runToTayerna()
     realManSim.manSimPressKey("G")
-    time.sleep(1)
+    time.sleep(2)
     realManSim.manSimMultiKey("shift","G") 
     time.sleep(2)
     realManSim.manSimPressKey("G")
     realManSim.manSimPressKey("G")
-    time.sleep(1)       
+    time.sleep(2)       
     
     # 快递任结束 
     botStatesObj.logger.info("charctor:%s-> Lopang express completed success ..." %botStatesObj.statesConfig["currentCharacter"] )
@@ -231,7 +232,7 @@ def startDaily(guildDonoEnable, lopangEnable):
     botStatesObj.logger.info("All daily task finished ")            
 
 if __name__ == "__main__":
-    guildDonoEnable = False
+    guildDonoEnable = True
     lopangEnable = True
     startDaily(guildDonoEnable, lopangEnable)
 
