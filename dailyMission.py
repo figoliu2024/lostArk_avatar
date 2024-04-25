@@ -124,8 +124,13 @@ def acceptLopangDaily(botStatesObj):
 def doLopang(botStatesObj):
     botStatesObj.logger.info("charctor:%s-> start Lopang express" %botStatesObj.statesConfig["currentCharacter"] )
     realManSim.sleep(1000, 2000)
-    acceptLopangDaily(botStatesObj)
+    re = acceptLopangDaily(botStatesObj)
     realManSim.sleep(1000, 2000)
+    
+    #已经送过快递
+    if not re:
+        realManSim.manSimPressKey("ESC")
+        return False
     
     #传送lopang
     botStatesObj.logger.info("charctor:%s-> bifrost Go To lopang island" %botStatesObj.statesConfig["currentCharacter"] )

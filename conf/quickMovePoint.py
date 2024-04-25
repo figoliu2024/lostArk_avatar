@@ -29,7 +29,7 @@ defaultLoPang_points={
     
     "BenongToTayerna":[
         [1398,500 ],
-        [1376,548 ],
+        [1376,538 ],
     ],
 }
 

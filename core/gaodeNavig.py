@@ -364,7 +364,7 @@ class lopangMove(object):
                 time.sleep(2)     
         else:
             print("check Tayerna failed, bot exist!!")
-            exit()         
+            # exit()         
  
         
 # bmp地图转化为产生二值化地图
