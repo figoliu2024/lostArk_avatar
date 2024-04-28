@@ -5,7 +5,7 @@ import numpy
 import pyautogui
 import cv2
 import time
-import yaml
+# import yaml
 from PIL import Image
 import core.aStarFigo as aStarFigo
 from core import realManSim
@@ -188,6 +188,50 @@ class amap(object):
         else:
             self.basicUiCtrlObj.logger.info("charctor[%s]-> didn't find lopang bifrost point" %self.statesConfig["currentCharacter"] )
             return False
+
+    #彩虹桥按备注名传送
+    def bifrostRemarksGoTo(self,destName):
+        """_summary_
+
+        Args:
+            #彩虹桥按备注名传送
+
+        Returns:
+            _type_: _description_
+        """
+        # self.basicUiCtrlObj.cleanUi()
+        
+        self.basicUiCtrlObj.botUiLeftClick("bifrost",0)
+        time.sleep(2)
+        re = self.basicUiCtrlObj.botPicCheck("fullScreen",destName)
+        if re != None:
+            x,y = re
+            reCD = pyautogui.locateCenterOnScreen(
+                self.picPath+"bifrostInCD.bmp",
+                confidence=0.8,
+                region=[x,y-50,400,60],
+            ) 
+            if reCD != None:
+                #已经CD了
+                self.basicUiCtrlObj.logger.info("charctor[%s]-> failed bifrost go to %s, because of already CD " %(self.statesConfig["currentCharacter"], destName))
+                self.basicUiCtrlObj.cleanUi()
+                return False           
+            x = x+348
+            y = y-43
+            realManSim.manSimMoveAndLeftClick(x, y)
+            re = self.basicUiCtrlObj.clickOkButton()
+            if re:
+                self.basicUiCtrlObj.waitGameLoding()
+                return True
+            else:
+                self.basicUiCtrlObj.logger.info("charctor[%s]-> failed transfer to %s " %(self.statesConfig["currentCharacter"],destName) )
+                
+                self.basicUiCtrlObj.cleanUi()
+                return False
+        else:
+            self.basicUiCtrlObj.logger.info("charctor[%s]-> didn't find %s bifrost point"  %(self.statesConfig["currentCharacter"],destName) )
+            self.basicUiCtrlObj.cleanUi()
+            return False
         
     #航海传送
     def linerGoTo(self,destName):
@@ -365,7 +409,44 @@ class lopangMove(object):
         else:
             print("check Tayerna failed, bot exist!!")
             # exit()         
- 
+
+
+class feidunMove(object):
+    def __init__(self) -> None:
+        self.picPath = "./res/pic/"      
+        
+    def initfeidunMove(self,UiRegions,UiCoordi,basicUiCtrlObj,breakStone_points):
+        '''
+        lopang对象初始化
+        '''
+        print ("initiation lopangMove")
+        self.UiRegions = UiRegions
+        self.UiCoordi = UiCoordi
+        self.breakStone_points = breakStone_points
+        self.rolePosition = self.UiCoordi["screenCenter"]        
+        
+    def pointPicCheck(self,regionName, pic):
+        re = pyautogui.locateCenterOnScreen(
+            self.picPath+pic,
+            confidence=0.8,
+            region=self.UiRegions[regionName],
+        )
+        return re
+    
+    def runToblackForesetToFirstPoint(self):
+        '''
+        去往第一个检查点
+        '''
+        time.sleep(1)
+        re = self.pointPicCheck("fullScreen", "loPang_startPoint.bmp")
+        if re != None:
+            x,y = re
+            realManSim.manSimMoveAndRightClick(x, y)
+            time.sleep(2)
+            print("move to start check point success..")
+        else:
+            print("check start point failed, bot exist!!")
+            exit()  
         
 # bmp地图转化为产生二值化地图
 def binMapGen(mapPath, outMapName):
@@ -468,4 +549,4 @@ if __name__ == "__main__":
     # realManSim.manSimPressKey("G")
     # time.sleep(1)       
     
-    #快递任结束 
+    #快递任结束

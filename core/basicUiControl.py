@@ -55,23 +55,32 @@ class basicUiCtrl(object):
         '''
         startTime = time.time()
         self.logger.info("wait game loading" )
-        time.sleep(10)
+        time.sleep(5)
+        #等待进入loading 界面
         while(1):
-            #wait loding
             re = self.botPicCheck("loadingUiRegion","gameLoading.bmp")
-            if re:
-                startTime = time.time()
+            if re!=None:
+                self.logger.info("game loading detected")
+                time.sleep(3)
+                break
             else:
-                re2 = self.botPicCheck("inTownCheck","inTown.bmp")
-                if re2!=None:
-                    break
-                else:
-                    curTime = time.time()
-                    if curTime-startTime>30:
-                        self.logger.error("stack in game loading stage, bot exist")
-                        exit()
-        self.logger.info("game loading finished")
-        time.sleep(3)
+                curTime = time.time()
+                if curTime-startTime>30:
+                    self.logger.error("stack in game loading stage, bot exist")
+                    exit()
+                    
+        #等待loading界面结束
+        while(1):
+            re = self.botPicCheck("inTownCheck","inTown.bmp")
+            if re!=None:
+                self.logger.info("game loading finished")
+                time.sleep(3)
+                break
+            else:
+                curTime = time.time()
+                if curTime-startTime>30:
+                    self.logger.error("stack in game loading stage, bot exist")
+                    exit()
     
     def cleanUi(self):
         '''

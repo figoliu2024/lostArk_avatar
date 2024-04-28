@@ -33,3 +33,32 @@ defaultLoPang_points={
     ],
 }
 
+defaultBreakStone_points={
+    "blackForesetToFirstPoint":[
+        [1533,913],
+        [1533,913],
+        [1533,913],
+        [1531,918],        
+        [1478,968],
+        [1424,935],  
+    ],
+    "blackForesetToSecondPoint":[
+        [1753,376],
+        [1501,266],
+    ],
+    "blackHawkHotelToFirstPoint":[
+        [51 ,655],
+        [438,959],
+        [390,840],
+        [350,86],        
+        [383,83],
+    ],    
+    "blackHawkHotelToSecondPoint":[
+        [1245,922],
+        [1378,1009],
+        [441,974],
+        [426,683],        
+        [393,948],
+        [870,948],  
+    ],        
+}
