@@ -129,10 +129,10 @@ class botStates(object):
             self.skillBarRegions[k]= [tmpX,tmpY,self.skillBarRegions[k][2],self.skillBarRegions[k][3]]
             
         # 载入角色技能库
-        self.charcSkill = skillLists.Wardancer
+        # self.charcSkill = skillLists.Wardancer
         
         # 加载战斗模块
-        self.chaosCombatObj = battle.chaosCombat
+        # self.chaosCombatObj = battle.chaosCombat
         # self.skill_Artist    = skillLists.Artist
         # self.skill_Arcanist  = skillLists.Arcanist
         
@@ -210,16 +210,16 @@ class botStates(object):
             self.basicUiCtrlObj.cleanUi()
             self.basicUiCtrlObj.cleanUi()
 
-        match charcNo:
-            case 0:
-                self.charcSkill = skillLists.Wardancer 
-            case 1: 
-                self.charcSkill = skillLists.Artist
-            case 4:
-                self.charcSkill = skillLists.Arcanist
-            case _:
-                #其他未支持角色
-                self.charcSkill = skillLists.Wardancer
+        # match charcNo:
+        #     case 0:
+        #         self.charcSkill = skillLists.Wardancer 
+        #     case 1: 
+        #         self.charcSkill = skillLists.Artist
+        #     case 4:
+        #         self.charcSkill = skillLists.Arcanist
+        #     case _:
+        #         #其他未支持角色
+        #         self.charcSkill = skillLists.Wardancer
                 
                 
         return True

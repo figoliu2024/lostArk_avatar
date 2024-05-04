@@ -502,19 +502,19 @@ def startDaily(startRole):
     botStatesObj.logger.info("All daily task finished ")            
 
 if __name__ == "__main__":
-    # startRole = 1
-    # startDaily(startRole)
+    startRole = 5
+    startDaily(startRole)
 
 
 #debug
-    botStatesObj = botStates.botStates()
-    botStatesObj.initBot()
+    # botStatesObj = botStates.botStates()
+    # botStatesObj.initBot()
     # acceptBreakStoneDaily(botStatesObj)
     # doRapport(botStatesObj)
     # acceptLopangDaily(botStatesObj)
     # doGuildDonation(botStatesObj)
     
-    doLopang(botStatesObj)
+    # doLopang(botStatesObj)
 
-    doBreakStoneDaily(botStatesObj)
+    # doBreakStoneDaily(botStatesObj)
     #纪念仪式任务

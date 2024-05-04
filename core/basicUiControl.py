@@ -53,10 +53,11 @@ class basicUiCtrl(object):
         '''
         等待读条完成
         '''
-        startTime = time.time()
+        
         self.logger.info("wait game loading" )
         time.sleep(5)
         #等待进入loading 界面
+        startTime = time.time()
         while(1):
             re = self.botPicCheck("loadingUiRegion","gameLoading.bmp")
             if re!=None:
@@ -65,11 +66,12 @@ class basicUiCtrl(object):
                 break
             else:
                 curTime = time.time()
-                if curTime-startTime>30:
+                if curTime-startTime>50:
                     self.logger.error("stack in game loading stage, bot exist")
                     exit()
                     
         #等待loading界面结束
+        startTime = time.time()
         while(1):
             re = self.botPicCheck("inTownCheck","inTown.bmp")
             if re!=None:
@@ -78,7 +80,7 @@ class basicUiCtrl(object):
                 break
             else:
                 curTime = time.time()
-                if curTime-startTime>30:
+                if curTime-startTime>50:
                     self.logger.error("stack in game loading stage, bot exist")
                     exit()
     
