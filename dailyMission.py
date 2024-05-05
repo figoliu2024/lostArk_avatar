@@ -33,6 +33,7 @@ def doGuildDonation(botStatesObj):
     #支援研究
     realManSim.manSimMoveAndLeftClick(botStatesObj.UiCoordi["researchTap"][0],botStatesObj.UiCoordi["researchTap"][1])
 
+    time.sleep(2)
     supportResearch = pyautogui.locateCenterOnScreen(
         "res/pic/supportResearch.bmp",
         confidence=0.8,
@@ -220,18 +221,19 @@ def rapportShowEmoji(botStatesObj):
     x,y = botStatesObj.basicUiCtrlObj.botPicCheck("fullScreen","showEmoji.bmp")
     realManSim.manSimMoveAndLeftClick(x, y)
     time.sleep(1)
-    x,y = botStatesObj.basicUiCtrlObj.botPicCheck("fullScreen","allowShowEmoji.bmp")
-    x = int(x)
-    y = int(y)
-    # color = pyautogui.pixel(x, y) #获取指定位置的色值
-    # print('色值{}'.format(color))
-    matchColor = pyautogui.pixelMatchesColor(x, y, (127, 165, 176), tolerance=10) #检测指定位置是否指定颜色 误差范围3
-    # print('色值是否匹配{}'.format(matchColor))
-    if matchColor:
-        realManSim.manSimMoveAndLeftClick(x, y)
-        x,y = botStatesObj.basicUiCtrlObj.botPicCheck("fullScreen","startShowEmoji.bmp")
-        realManSim.manSimMoveAndLeftClick(x, y)
-        time.sleep(15) 
+    re = botStatesObj.basicUiCtrlObj.botPicCheck("fullScreen","allowShowEmoji.bmp")
+    if re != None:
+        x = int(x)
+        y = int(y)
+        # color = pyautogui.pixel(x, y) #获取指定位置的色值
+        # print('色值{}'.format(color))
+        matchColor = pyautogui.pixelMatchesColor(x, y, (162, 210, 224), tolerance=10) #检测指定位置是否指定颜色 误差范围3
+        # print('色值是否匹配{}'.format(matchColor))
+        if matchColor:
+            realManSim.manSimMoveAndLeftClick(x, y)
+            x,y = botStatesObj.basicUiCtrlObj.botPicCheck("fullScreen","startShowEmoji.bmp")
+            realManSim.manSimMoveAndLeftClick(x, y)
+            time.sleep(15) 
 
 #好感度日常
 def doRapport(botStatesObj):   
@@ -513,7 +515,9 @@ if __name__ == "__main__":
     # doRapport(botStatesObj)
     # acceptLopangDaily(botStatesObj)
     # doGuildDonation(botStatesObj)
-    
+    # realManSim.manSimPressKey("G")
+    # time.sleep(1)
+    # rapportShowEmoji(botStatesObj) 
     # doLopang(botStatesObj)
 
     # doBreakStoneDaily(botStatesObj)
