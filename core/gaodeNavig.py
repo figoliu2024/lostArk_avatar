@@ -411,6 +411,8 @@ class lopangMove(object):
             # exit()         
 
 
+
+
 class feidunMove(object):
     def __init__(self) -> None:
         self.picPath = "./res/pic/"      
@@ -423,31 +425,99 @@ class feidunMove(object):
         self.UiRegions = UiRegions
         self.UiCoordi = UiCoordi
         self.breakStone_points = breakStone_points
-        self.rolePosition = self.UiCoordi["screenCenter"]        
+        self.rolePosition = self.UiCoordi["screenCenter"]  
+        self.basicUiCtrlObj = basicUiCtrlObj
         
-    def pointPicCheck(self,regionName, pic):
-        re = pyautogui.locateCenterOnScreen(
-            self.picPath+pic,
-            confidence=0.8,
-            region=self.UiRegions[regionName],
-        )
-        return re
+    # def pointPicCheck(self,regionName, pic):
+    #     re = pyautogui.locateCenterOnScreen(
+    #         self.picPath+pic,
+    #         confidence=0.8,
+    #         region=self.UiRegions[regionName],
+    #     )
+    #     return re
     
     def runToblackForesetToFirstPoint(self):
         '''
         去往第一个检查点
         '''
         time.sleep(1)
-        re = self.pointPicCheck("fullScreen", "loPang_startPoint.bmp")
+        print("move from start Point to First task point..")
+        for k in self.breakStone_points["blackForesetToFirstPoint"]:
+            x = k[0]
+            y = k[1]
+            print("move to the [x:%d y:%d] "%(x,y))
+            realManSim.manSimMoveAndRightClick(x, y)
+            time.sleep(2)
+            
+    def runToblackForesetToSecondPoint(self):
+        '''
+        去往第2个检查点
+        '''
+        time.sleep(1)
+        print("move blackForesetToSecondPoint..")
+        for k in self.breakStone_points["blackForesetToSecondPoint"]:
+            x = k[0]
+            y = k[1]
+            print("move to the [x:%d y:%d] "%(x,y))
+            realManSim.manSimMoveAndRightClick(x, y)
+            time.sleep(2)        
+               
+    def runToblackHawkHotelToFirstPoint(self):
+        '''
+        去往第1个检查点
+        '''
+        time.sleep(1)
+        print("move blackHawkHotelToFirstPoint..")
+        for k in self.breakStone_points["blackHawkHotelToFirstPoint"]:
+            x = k[0]
+            y = k[1]
+            print("move to the [x:%d y:%d] "%(x,y))
+            realManSim.manSimMoveAndRightClick(x, y)
+            time.sleep(2)    
+                
+    def runToFirstCheckPoint(self):
+        '''
+        去往第一个检查点
+        '''
+        time.sleep(1)
+        re = self.basicUiCtrlObj.botPicCheck("fullScreen", "dainuo.bmp")
         if re != None:
             x,y = re
+            y = y+232
             realManSim.manSimMoveAndRightClick(x, y)
             time.sleep(2)
             print("move to start check point success..")
         else:
             print("check start point failed, bot exist!!")
-            exit()  
-        
+            exit()      
+                     
+    def runToblackHawkHotelToSecondPoint(self):
+        '''
+        去往第2个检查点
+        '''
+        time.sleep(1)
+        print("move blackHawkHotelToSecondPoint..")
+        for k in self.breakStone_points["blackHawkHotelToSecondPoint"]:
+            x = k[0]
+            y = k[1]
+            print("move to the [x:%d y:%d] "%(x,y))
+            realManSim.manSimMoveAndRightClick(x, y)
+            time.sleep(4)            
+
+    def runToblackHawkHotelToThirdPoint(self):
+        '''
+        去往第2个检查点
+        '''
+        time.sleep(1)
+        print("move blackHawkHotelToThirdPoint..")
+        for k in self.breakStone_points["blackHawkHotelToThirdPoint"]:
+            x = k[0]
+            y = k[1]
+            print("move to the [x:%d y:%d] "%(x,y))
+            realManSim.manSimMoveAndRightClick(x, y)
+            time.sleep(2)                      
+
+                  
 # bmp地图转化为产生二值化地图
 def binMapGen(mapPath, outMapName):
     print ("transfer map pic to Bin Data")

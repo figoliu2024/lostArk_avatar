@@ -14,6 +14,7 @@ from conf.config import defaultCharacters
 # from conf.config import deFaultAbilities
 from conf.skillLists import defaultSkillBarRegions
 from conf.quickMovePoint import defaultLoPang_points
+from conf.quickMovePoint import defaultBreakStone_points
 
 from conf import skillLists
 
@@ -34,7 +35,7 @@ class botStates(object):
         self.UiCoordi = defaultUiCoordi
         self.Characters = defaultCharacters
         self.loPang_points = defaultLoPang_points
-        # self.breakStone_points = defaultBreakStone_points
+        self.breakStone_points = defaultBreakStone_points
         self.skillBarRegions = defaultSkillBarRegions
         
         
@@ -42,6 +43,7 @@ class botStates(object):
         self.windowObj = gameWindowLocate.gameWindow()
         self.amapObj = gaodeNavig.amap()
         self.lopangMoveObj = gaodeNavig.lopangMove()
+        self.feidunMoveObj = gaodeNavig.feidunMove()
         
         self.logger = logging.getLogger()
         self.logger.setLevel(logging.INFO)  # Log等级总开关 
@@ -106,13 +108,13 @@ class botStates(object):
                 self.loPang_points[k][idx][0] = tmpX 
                 self.loPang_points[k][idx][1] = tmpY
 
-        # for k in self.breakStone_points:
-        #     cellSize = len(self.breakStone_points[k])
-        #     for idx in range(cellSize):
-        #         tmpX = self.breakStone_points[k][idx][0]+self.statesConfig["windowTopLeft"][0]
-        #         tmpY = self.breakStone_points[k][idx][1]+self.statesConfig["windowTopLeft"][1]
-        #         self.breakStone_points[k][idx][0] = tmpX 
-        #         self.breakStone_points[k][idx][1] = tmpY        
+        for k in self.breakStone_points:
+            cellSize = len(self.breakStone_points[k])
+            for idx in range(cellSize):
+                tmpX = self.breakStone_points[k][idx][0]+self.statesConfig["windowTopLeft"][0]
+                tmpY = self.breakStone_points[k][idx][1]+self.statesConfig["windowTopLeft"][1]
+                self.breakStone_points[k][idx][0] = tmpX 
+                self.breakStone_points[k][idx][1] = tmpY        
         # 加载基本控制库
         self.basicUiCtrlObj = BUCPy.basicUiCtrl(self.UiRegions, self.UiCoordi, self.statesConfig, self.logger)
         
@@ -122,17 +124,26 @@ class botStates(object):
         # 加载罗庞任务移动对象
         self.lopangMoveObj.initLopangMove(self.UiRegions, self.UiCoordi, self.basicUiCtrlObj, self.loPang_points)
         
+        # 加载费顿任务移动对象
+        self.feidunMoveObj.initfeidunMove(self.UiRegions, self.UiCoordi, self.basicUiCtrlObj, self.breakStone_points)
+               
         # 刷新动作条库
         for k in self.skillBarRegions:
             tmpX = self.skillBarRegions[k][0]+self.statesConfig["windowTopLeft"][0]
             tmpY = self.skillBarRegions[k][1]+self.statesConfig["windowTopLeft"][1]
             self.skillBarRegions[k]= [tmpX,tmpY,self.skillBarRegions[k][2],self.skillBarRegions[k][3]]
             
-        # 载入角色技能库
+        # # 载入角色技能库
         # self.charcSkill = skillLists.Wardancer
         
         # 加载战斗模块
-        # self.chaosCombatObj = battle.chaosCombat
+        self.chaosCombatObj = battle.chaosCombat()
+        self.chaosCombatObj.initChaosCombat(self.statesConfig, self.UiCoordi, self.basicUiCtrlObj, self.skillBarRegions)
+        self.skill_Wardancer = skillLists.Wardancer
+        
+        self.chaosCombatObj.saveSkillBarNoCDImage()
+    
+        self.chaosCombatObj.loadSkill(self.skill_Wardancer)
         # self.skill_Artist    = skillLists.Artist
         # self.skill_Arcanist  = skillLists.Arcanist
         
@@ -210,6 +221,8 @@ class botStates(object):
             self.basicUiCtrlObj.cleanUi()
             self.basicUiCtrlObj.cleanUi()
 
+        self.chaosCombatObj.saveSkillBarNoCDImage()
+        self.chaosCombatObj.loadSkill(self.skill_Wardancer)
         # match charcNo:
         #     case 0:
         #         self.charcSkill = skillLists.Wardancer 

@@ -49,6 +49,19 @@ class basicUiCtrl(object):
         else:
             return False
    
+    def finishTaskAcptRewards(self):
+        '''
+        提交任务
+        '''    
+        realManSim.manSimPressKey("G")
+        time.sleep(2)
+        realManSim.manSimMultiKey("shift","G") 
+        time.sleep(2)
+        realManSim.manSimPressKey("G")
+        realManSim.manSimPressKey("G")
+        time.sleep(2)
+    
+    
     def waitGameLoding(self):
         '''
         等待读条完成

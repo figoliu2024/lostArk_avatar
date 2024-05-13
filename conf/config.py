@@ -48,6 +48,8 @@ defaultStatesConfig = {
     "currentCharacter": 0,
     "multiCharacterModeState": 0,
     "numberOfCharacters":6,
+    "doneEmojiTimes":0,
+    "doneMusicTimes":0,
     "screenWidth":  1920,
     "screenHeight": 1080,
     "windowTopLeft":[0,0], #定位窗口的锚点
@@ -59,6 +61,7 @@ defaultStatesConfig = {
     "enableLopang": True,  # NOTE: you need to setup bifrost locations properly for this, at very specific locations. Look up ^
     "enableGuildDonation": True,  # please make sure all your characters have a guild
     "enableRapport": True,  # NOTE: you need to setup bifrost no3 infront of a rapport NPC
+    "enableBreakStone": True,
     "floor3Mode": False,  # only enable if you ONLY want to run infinite floor3 clearing
     # Setup your characters below:
     # can setup UP TO 18(0 to 17) characters for daily chaos/lopang/guild stuff
@@ -199,6 +202,7 @@ defaultCharacters = {
         "lopang": False,
         "guildDonation": True,
         "rapport": True,
+        "breakStone": True,
         "abilities": [],
     },
     "charc1":{
@@ -209,6 +213,7 @@ defaultCharacters = {
         "lopang": False,
         "guildDonation": True,
         "rapport": False,
+        "breakStone": True,
         "abilities": [],
     },
     "charc2":{
@@ -219,6 +224,7 @@ defaultCharacters = {
         "lopang": True,
         "guildDonation": True,
         "rapport": False,
+        "breakStone": False,
         "abilities": [],
     },
     "charc3":{
@@ -229,6 +235,7 @@ defaultCharacters = {
         "lopang": False,
         "guildDonation": True,
         "rapport": True,
+        "breakStone": False,
         "abilities": [],
     },
     "charc4":{
@@ -239,6 +246,7 @@ defaultCharacters = {
         "lopang": True,
         "guildDonation": True,
         "rapport": False,
+        "breakStone": False,
         "abilities": [],
     },         
     "charc5":{
@@ -249,6 +257,7 @@ defaultCharacters = {
         "lopang": True,
         "guildDonation": True,
         "rapport": False,
+        "breakStone": False,
         "abilities": [],
     },        
 }

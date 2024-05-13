@@ -6,7 +6,7 @@ import pydirectinput
 # function：sim real man press the keyboard2
 def manSimPressKey(keyStr):
     pyautogui.keyDown(keyStr)
-    time.sleep( random.uniform( 0.3, 0.5))
+    time.sleep( random.uniform( 0.1, 0.3))
     pyautogui.keyUp(keyStr)
     
 def manSimLeftClick(x,y):
@@ -32,6 +32,7 @@ def manSimMoveAndRightClick(x,y):
     time.sleep(random.uniform(0.1, 0.3))
     pyautogui.click(x, y, clicks=1, button='right')
     
+    
 #组合按键函数
 def manSimMultiKey(downKey,pressKey):
     pydirectinput.keyDown(downKey)
@@ -50,7 +51,7 @@ def leftClick_locatePic(picPath):
 
     
 def manSimWaitShort():
-    time.sleep(random.uniform(0.3, 0.5))
+    time.sleep(random.uniform(0.01, 0.05))
     
 def manSimWaitMedim():
     time.sleep(random.uniform(1.0, 1.5))
@@ -59,7 +60,7 @@ def manSimWaitlong():
     time.sleep(random.uniform(3.0, 5.0))
     
 def manSimMoveTo(x,y):
-    pyautogui.moveTo(x, y, duration=random.uniform(0.1, 0.5))  
+    pyautogui.moveTo(x, y, duration=random.uniform(0.01, 0.2))  
     
 def sleep(min, max):
     sleepTime = random.randint(min, max) / 1000.0

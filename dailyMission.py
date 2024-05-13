@@ -215,6 +215,9 @@ def rapportPlayMusic(botStatesObj):
         x,y = botStatesObj.basicUiCtrlObj.botPicCheck("fullScreen","startPlayMusic.bmp")
         realManSim.manSimMoveAndLeftClick(x, y)
         time.sleep(15)  
+        return True
+    else:
+        return False
 
 def rapportShowEmoji(botStatesObj):
     #表现情感
@@ -223,10 +226,11 @@ def rapportShowEmoji(botStatesObj):
     time.sleep(1)
     re = botStatesObj.basicUiCtrlObj.botPicCheck("fullScreen","allowShowEmoji.bmp")
     if re != None:
+        x,y = re
         x = int(x)
         y = int(y)
-        # color = pyautogui.pixel(x, y) #获取指定位置的色值
-        # print('色值{}'.format(color))
+        color = pyautogui.pixel(x, y) #获取指定位置的色值
+        print('色值{}'.format(color))
         matchColor = pyautogui.pixelMatchesColor(x, y, (162, 210, 224), tolerance=10) #检测指定位置是否指定颜色 误差范围3
         # print('色值是否匹配{}'.format(matchColor))
         if matchColor:
@@ -234,6 +238,9 @@ def rapportShowEmoji(botStatesObj):
             x,y = botStatesObj.basicUiCtrlObj.botPicCheck("fullScreen","startShowEmoji.bmp")
             realManSim.manSimMoveAndLeftClick(x, y)
             time.sleep(15) 
+            return True
+        else:
+            return False
 
 #好感度日常
 def doRapport(botStatesObj):   
@@ -262,11 +269,34 @@ def doRapport(botStatesObj):
         realManSim.manSimPressKey("G")
         time.sleep(1)
         #演奏音乐
-        rapportPlayMusic(botStatesObj)
-        rapportPlayMusic(botStatesObj)    
+        if botStatesObj.statesConfig["doneMusicTimes"]<6:
+            re = rapportPlayMusic(botStatesObj)
+            if re:
+                botStatesObj.statesConfig["doneMusicTimes"] = botStatesObj.statesConfig["doneMusicTimes"]+1
+        else:
+            botStatesObj.logger.info("all rapper MusicTimes times done!")
+            
+        if botStatesObj.statesConfig["doneMusicTimes"]<6:
+            re = rapportPlayMusic(botStatesObj)
+            if re:
+                botStatesObj.statesConfig["doneMusicTimes"] = botStatesObj.statesConfig["doneMusicTimes"]+1
+        else:
+            botStatesObj.logger.info("all rapper MusicTimes times done!")
+            
         #表现情感
-        rapportShowEmoji(botStatesObj) 
-        rapportShowEmoji(botStatesObj) 
+        if botStatesObj.statesConfig["doneMusicTimes"]<6:
+            re = rapportShowEmoji(botStatesObj) 
+            if re:
+                botStatesObj.statesConfig["doneEmojiTimes"] = botStatesObj.statesConfig["doneMusicTimes"]+1
+            else:
+                botStatesObj.logger.info("all rapper emoji times done!")
+                
+        if botStatesObj.statesConfig["doneMusicTimes"]<6:
+            re = rapportShowEmoji(botStatesObj) 
+            if re:
+                botStatesObj.statesConfig["doneEmojiTimes"] = botStatesObj.statesConfig["doneMusicTimes"]+1
+            else:
+                botStatesObj.logger.info("all rapper emoji times done!")                
         botStatesObj.basicUiCtrlObj.cleanUi()    
         
     #npc 111 
@@ -300,6 +330,7 @@ def acceptBreakStoneDaily(botStatesObj):
     botStatesObj.basicUiCtrlObj.cleanUi()
     botStatesObj.logger.info("charctor:%s-> accept BreakStone Daily tasks" %botStatesObj.statesConfig["currentCharacter"] )
     #打开日常任务界面
+    time.sleep(2)
     realManSim.manSimMultiKey("alt","j")           
     #点击每日委托标签
     re = botStatesObj.basicUiCtrlObj.botPicCheck("fullScreen","dailyTaskTab.bmp")  
@@ -389,7 +420,7 @@ def doBreakStoneDaily(botStatesObj):
     h = 90
     s = 19
     v = 255
-    targetColor=[h,s,v] #守望者触角颜色
+    targetColor=[h,s,v] #守望者触角颜色m
     outline=[50,50] #轮廓大小
     
     while(1):
@@ -407,15 +438,25 @@ def doBreakStoneDaily(botStatesObj):
             time.sleep(2)
             re=botStatesObj.basicUiCtrlObj.botPicCheck("EvnaTaskFinishedCheck","taskWatchmanFinished.bmp")
             if re!=None:
-                botStatesObj.logger.info("charctor:%s-> 守望者任务完成" %botStatesObj.statesConfig["currentCharacter"] )
-                break
+                x,y = re
+                taskJudgeRegion = [x-89,y-14,21,26]
+                pic = "taskFinishedMark.bmp"
+                re = pyautogui.locateCenterOnScreen(
+                    botStatesObj.picPath+pic,
+                    confidence=0.8,
+                    region=taskJudgeRegion,
+                )
+                if re!=None:
+                    botStatesObj.logger.info("charctor:%s-> 守望者任务完成" %botStatesObj.statesConfig["currentCharacter"] )
+                    break
         else:
             curTime = time.time()
             if curTime-startTime>120:
                 botStatesObj.logger.error("stack in game loading stage, bot exist")
                 exit()
         
-    #纪念仪式任务
+    # 纪念仪式任务
+    # 传送至黑森林
     re = botStatesObj.basicUiCtrlObj.botPicCheck("EvnaTaskFinishedCheck","taskDestinyEyeStatus.bmp")
     if re != None:
         x, y = re
@@ -433,9 +474,107 @@ def doBreakStoneDaily(botStatesObj):
             botStatesObj.basicUiCtrlObj.waitGameLoding()
         else:
             return False
-        
-        
+    # 传送至黑森林
+    botStatesObj.logger.info("charctor:%s-> bifrost Go To 费顿" %botStatesObj.statesConfig["currentCharacter"] )
+    re = botStatesObj.amapObj.bifrostGoTo("feidun_BifrostDestiTask.bmp")
+    if not re:
+        return False
+
+    realManSim.manSimPressKey("G")
+    time.sleep(3.5)
+    botStatesObj.chaosCombatObj.castSkill("F")
+    time.sleep(1)
+    realManSim.manSimPressKey("G")
+    time.sleep(3.5)
+    # 移动至头部任务捡拾点
+    # re = botStatesObj.basicUiCtrlObj.botPicCheck("fullScreen","blackForest_startpoint.bmp")
+    # x,y = re
+    # x=x-270
+    # y=y-135
+    # realManSim.manSimMoveAndRightClick(x, y)
+    # time.sleep(2)
+    # realManSim.manSimPressKey("F1")
+    # time.sleep(3)
+    # botStatesObj.feidunMoveObj.runToblackForesetToFirstPoint()
+    # realManSim.manSimPressKey("R")
+    # time.sleep(1)
+
+    # #消灭怪物
+    # realManSim.manSimPressKey("G")
+    # time.sleep(3.5)
+    # botStatesObj.chaosCombatObj.enemyDirect = botStatesObj.UiCoordi["screenCenter"]
+    # botStatesObj.chaosCombatObj.enemyDirect[0] = botStatesObj.chaosCombatObj.enemyDirect[0]-200
+    # botStatesObj.chaosCombatObj.enemyDirect[1] = botStatesObj.chaosCombatObj.enemyDirect[1]-200  
+    # botStatesObj.chaosCombatObj.castSkill("F")
+    # botStatesObj.chaosCombatObj.castSkill("W")
+    # time.sleep(2)
+    # botStatesObj.chaosCombatObj.castSkill("Q")
+    # realManSim.manSimPressKey("G")
+    # time.sleep(3.5)
     
+    realManSim.manSimPressKey("F1")
+    time.sleep(3)
+    botStatesObj.feidunMoveObj.runToblackForesetToSecondPoint()
+    realManSim.manSimPressKey("R")
+    time.sleep(1)
+    realManSim.manSimPressKey("G")
+    time.sleep(3.5)
+    botStatesObj.chaosCombatObj.enemyDirect = botStatesObj.UiCoordi["screenCenter"]
+    botStatesObj.chaosCombatObj.enemyDirect[0] = botStatesObj.chaosCombatObj.enemyDirect[0]-200
+    botStatesObj.chaosCombatObj.enemyDirect[1] = botStatesObj.chaosCombatObj.enemyDirect[1]-200  
+    botStatesObj.chaosCombatObj.castSkill("F")
+    botStatesObj.chaosCombatObj.castSkill("W")
+    time.sleep(2)
+    botStatesObj.chaosCombatObj.castSkill("E")
+    realManSim.manSimPressKey("G")
+    time.sleep(3.5)
+    
+    re=botStatesObj.basicUiCtrlObj.botPicCheck("EvnaTaskFinishedCheck","taskDestinyEyeFinished.bmp")
+    if re!=None:
+        x,y = re
+        taskJudgeRegion = [x-89,y-14,34,26]
+        pic = "taskFinishedMark.bmp"
+        re = pyautogui.locateCenterOnScreen(
+            botStatesObj.picPath+pic,
+            confidence=0.8,
+            region=taskJudgeRegion,
+        )
+        if re!=None:
+            botStatesObj.logger.info("charctor:%s-> 金塞拉任务完成" %botStatesObj.statesConfig["currentCharacter"] )
+        else:
+            botStatesObj.logger.error("charctor:%s-> 金塞拉任务失败" %botStatesObj.statesConfig["currentCharacter"] )    
+            exit()  
+        
+    re = botStatesObj.basicUiCtrlObj.botPicCheck("EvnaTaskFinishedCheck","taskDestinyEyeStatus.bmp")
+    if re != None:
+        x, y = re
+        x = x+187
+        realManSim.manSimMoveAndLeftClick(x, y)
+        time.sleep(1)
+        re = botStatesObj.basicUiCtrlObj.botPicCheck("fullScreen","blackHawkHotel.bmp")
+        if re != None:
+            x, y = re
+            x = x
+            realManSim.manSimMoveAndLeftClick(x, y)
+            time.sleep(1)
+            botStatesObj.basicUiCtrlObj.clickOkButton()
+            time.sleep(3)
+            botStatesObj.basicUiCtrlObj.waitGameLoding()
+        else:
+            return False
+    realManSim.manSimPressKey("F1")
+    time.sleep(3)
+    botStatesObj.feidunMoveObj.runToblackHawkHotelToFirstPoint()
+    botStatesObj.feidunMoveObj.runToFirstCheckPoint()
+    botStatesObj.feidunMoveObj.runToblackHawkHotelToSecondPoint()
+    #提交任务
+    botStatesObj.basicUiCtrlObj.finishTaskAcptRewards()
+    #去往下个npc
+    botStatesObj.feidunMoveObj.runToblackHawkHotelToThirdPoint()
+    #提交任务
+    botStatesObj.basicUiCtrlObj.finishTaskAcptRewards()
+    botStatesObj.logger.info("charctor:%s-> BreakStone Daily tasks finished ! :)" %botStatesObj.statesConfig["currentCharacter"] )
+
 #开始所有日常
 def startDaily(startRole):
     botStatesObj = botStates.botStates()
@@ -470,9 +609,12 @@ def startDaily(startRole):
             # rapport
             if botStatesObj.Characters[curChar]["rapport"] and botStatesObj.statesConfig["enableRapport"]:
                 doRapport(botStatesObj)          
+            #breakStone
+            if botStatesObj.Characters[curChar]["breakStone"] and botStatesObj.statesConfig["enableRapport"]:
+                doBreakStoneDaily(botStatesObj)
+                
             botStatesObj.statesConfig["finishedCharacter"] = botStatesObj.statesConfig["finishedCharacter"]+1
             
-
             if botStatesObj.statesConfig["finishedCharacter"] < botStatesObj.statesConfig["numberOfCharacters"]:
                 #继续执行剩余角色               
                 #切换至下个角色
@@ -504,7 +646,7 @@ def startDaily(startRole):
     botStatesObj.logger.info("All daily task finished ")            
 
 if __name__ == "__main__":
-    startRole = 5
+    startRole = 2
     startDaily(startRole)
 
 
@@ -519,6 +661,7 @@ if __name__ == "__main__":
     # time.sleep(1)
     # rapportShowEmoji(botStatesObj) 
     # doLopang(botStatesObj)
-
+    #纪念仪式任务   
+    # botStatesObj.chaosCombatObj.saveSkillBarNoCDImage()
+    # botStatesObj.chaosCombatObj.loadSkill(botStatesObj.skill_Wardancer)
     # doBreakStoneDaily(botStatesObj)
-    #纪念仪式任务
