@@ -53,6 +53,7 @@ defaultStatesConfig = {
     "screenWidth":  1920,
     "screenHeight": 1080,
     "windowTopLeft":[0,0], #定位窗口的锚点
+    "minimapRole":[148,126], #相对小地图的坐标
     # "windowTopLeft_y":0, #定位窗口的锚点
 
     "mainCharacter": 0,  # must be in between number 0 to len(characters) - 1 (0 is the first character)
@@ -87,7 +88,8 @@ defaultStatesConfig = {
     "delayedStart": 2500,
     "portalPause": 700,
     "gameLoadingTime": 10, #游戏读条时间，根据机器性能修改
-    "picPath":"./res/pic/"   
+    "picPath":"./res/pic/",
+    "supportClass":["Wardancer","Artist","Arcanist"],   
 }
 
 
@@ -105,7 +107,7 @@ defaultUiRegions = {
     "quickCharacterCheck":[384,650,100,100],
     "EvnaTaskPanel":[329,281,300,600],
     "EvnaTaskStatuePanel":[1226,281,200,600],
-    "fullScreen":[26,69,1800,1000],
+    "fullScreen":[0,0,1920,1080],
     "loadingUiRegion":[876,912,200,100],
     "rapportRegion":[29,822,200,260],
     "EvnaTaskFinishedCheck":[1556,411,300,460],
@@ -141,6 +143,7 @@ defaultUiCoordi = {
     # "screenCenterX": 960,
     # "screenCenterY": 540,
     "minimapCenter":[1772,272],
+    # "minimapRole":[148,126],
     # "minimapCenterX": 1772,
     # "minimapCenterY": 272,
     "healthCheck":[690,854],
@@ -190,6 +193,8 @@ defaultUiCoordi = {
     "bifrost":[1696,313],
     "roleInMiniMap":[1742,166.5],
     "dailyTasks":[563,301],
+    "moveBoundary_TopLeft":[400,90],
+    "moveBoundary_BottomRigth":[1500,950],
 }
 
 
@@ -215,9 +220,21 @@ defaultCharacters = {
         "rapport": False,
         "breakStone": True,
         "abilities": [],
+        "combolist":["Q","E","W","R","A","S","D","F"]
     },
     "charc2":{
         "index": 2,
+        "class": "Arcanist", #卡牌
+        "ilvl-endless": 1430,
+        "ilvl-aor": 1430,
+        "lopang": True,
+        "guildDonation": True,
+        "rapport": True,
+        "breakStone": False,
+        "abilities": [],
+    },         
+    "charc3":{
+        "index": 3,
         "class": "Shadowhunter", #半魔
         "ilvl-endless": 1430,
         "ilvl-aor": 1430,
@@ -227,8 +244,19 @@ defaultCharacters = {
         "breakStone": False,
         "abilities": [],
     },
-    "charc3":{
-        "index": 3,
+    "charc4":{
+        "index": 4,
+        "class": "fighter",
+        "ilvl-endless": 1430,
+        "ilvl-aor": 1430,
+        "lopang": True,
+        "guildDonation": True,
+        "rapport": False,
+        "breakStone": False,
+        "abilities": [],
+    },    
+    "charc5":{
+        "index":5,
         "class": "Soulfist",
         "ilvl-endless": 800,
         "ilvl-aor": 800,
@@ -238,27 +266,7 @@ defaultCharacters = {
         "breakStone": False,
         "abilities": [],
     },
-    "charc4":{
-        "index": 4,
-        "class": "Arcanist",
-        "ilvl-endless": 1430,
-        "ilvl-aor": 1430,
-        "lopang": True,
-        "guildDonation": True,
-        "rapport": False,
-        "breakStone": False,
-        "abilities": [],
-    },         
-    "charc5":{
-        "index": 5,
-        "class": "fighter",
-        "ilvl-endless": 1430,
-        "ilvl-aor": 1430,
-        "lopang": True,
-        "guildDonation": True,
-        "rapport": False,
-        "breakStone": False,
-        "abilities": [],
-    },        
+
+    
 }
 

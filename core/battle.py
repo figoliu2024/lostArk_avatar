@@ -81,47 +81,57 @@ class chaosCombat(object):
             
         
     def castSkill(self, key):
-        
-        startTime = time.time()
-        while(1):
-            if self.checkCD(key):
-                if self.charcSkill[key]["directional"] == True:
-                    realManSim.manSimMoveTo(self.enemyDirect[0], self.enemyDirect[1])
+        '''
+        释放技能， 返回是否CD
+        '''   
+        if self.checkCD(key):
+            if self.charcSkill[key]["directional"] == True:
+                x = numpy.sign(self.enemyDirect[0]-self.UiCoordi["screenCenter"][0])*100+self.UiCoordi["screenCenter"][0]
+                y = numpy.sign(self.enemyDirect[1]-self.UiCoordi["screenCenter"][1])*100+self.UiCoordi["screenCenter"][1]
+                realManSim.manSimMoveTo(x, y)
 
-                if self.charcSkill[key]["cast"] == True:
-                    #多次连击
-                    start_ms = int(time.time_ns() / 1000000)
+            if self.charcSkill[key]["cast"] == True:
+                #多次连击
+                start_ms = int(time.time_ns() / 1000000)
+                now_ms = int(time.time_ns() / 1000000)
+                while now_ms - start_ms < self.charcSkill[key]["castTime"]:
                     now_ms = int(time.time_ns() / 1000000)
-                    while now_ms - start_ms < self.charcSkill[key]["castTime"]:
-                        now_ms = int(time.time_ns() / 1000000)
-                        realManSim.manSimPressKey(key)
-                        time.sleep(0.2)
-                elif self.charcSkill[key]["hold"] == True:
-                    #按住不动
-                    start_ms = int(time.time_ns() / 1000000)
-                    now_ms = int(time.time_ns() / 1000000)
-                    pyautogui.keyDown(key)
-                    while now_ms - start_ms < self.charcSkill[key]["holdTime"]:
-                        now_ms = int(time.time_ns() / 1000000)
-                        time.sleep(0.1)
-                    pyautogui.keyUp(key)
-                else:
-                    #瞬发
                     realManSim.manSimPressKey(key)
-                    start_ms = int(time.time_ns() / 1000000)
+                    time.sleep(0.01)
+            elif self.charcSkill[key]["hold"] == True:
+                #按住不动
+                start_ms = int(time.time_ns() / 1000000)
+                now_ms = int(time.time_ns() / 1000000)
+                pyautogui.keyDown(key)
+                while now_ms - start_ms < self.charcSkill[key]["holdTime"]:
                     now_ms = int(time.time_ns() / 1000000)
-                    while now_ms - start_ms < self.charcSkill[key]["castTime"]:
-                        now_ms = int(time.time_ns() / 1000000)
-                        time.sleep(0.2)
+                    time.sleep(0.01)
+                pyautogui.keyUp(key)
             else:
-                return False
-                #in CD
-            curTime = time.time()
-            if curTime-startTime>10:
-                print("stack in game cast skill [%s]" %key)
-                return False                
+                #瞬发
+                realManSim.manSimPressKey(key)
+                # time.sleep(1)
+                start_ms = int(time.time_ns() / 1000000)
+                now_ms = int(time.time_ns() / 1000000)
+                while now_ms - start_ms < self.charcSkill[key]["castTime"]:
+                    now_ms = int(time.time_ns() / 1000000)
+                    time.sleep(0.01)
+            return True
+        else:
+            return False
 
+        
+    def comboListCast(self):
+        '''
+        按照推荐combo顺序释放，优先释放最前面的节能
+        '''   
+        for key in self.charcSkill["combolist"]:
+            re = self.castSkill(key)
+            if re:
+                #释放成功一次则退出
+                break
 
+    
 # ## Test bench 
 if __name__ == "__main__":
     botStatesObj = botPy.botStates()
@@ -131,7 +141,6 @@ if __name__ == "__main__":
     botStatesObj.chaosCombatObj.loadSkill(botStatesObj.skill_Wardancer)
     
     while(1):
-        for key in botStatesObj.chaosCombatObj.skillBarRegions:
-            botStatesObj.chaosCombatObj.castSkill(key)
+        botStatesObj.chaosCombatObj.comboListCast()
             # botStatesObj.chaosCombatObj.checkCD(key)
             # time.sleep(1)

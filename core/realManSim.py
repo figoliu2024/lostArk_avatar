@@ -29,7 +29,7 @@ def manSimMoveAndLeftClick(x,y):
 def manSimMoveAndRightClick(x,y):
     manSimMoveTo(x,y)
     pyautogui.click(x, y, clicks=0, button='right')
-    time.sleep(random.uniform(0.1, 0.3))
+    time.sleep(random.uniform(0.05, 0.15))
     pyautogui.click(x, y, clicks=1, button='right')
     
     

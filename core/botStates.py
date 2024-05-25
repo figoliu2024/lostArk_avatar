@@ -6,6 +6,8 @@ from core import realManSim
 from core import gaodeNavig
 from core import basicUiControl as BUCPy
 from core import battle
+from core.chaosDungeon import chaosDungeon
+from lib import libMathFigo
 
 from conf.config import defaultStatesConfig
 from conf.config import defaultUiRegions
@@ -44,6 +46,7 @@ class botStates(object):
         self.amapObj = gaodeNavig.amap()
         self.lopangMoveObj = gaodeNavig.lopangMove()
         self.feidunMoveObj = gaodeNavig.feidunMove()
+        self.chaosDungeonObj = chaosDungeon()
         
         self.logger = logging.getLogger()
         self.logger.setLevel(logging.INFO)  # Log等级总开关 
@@ -139,13 +142,14 @@ class botStates(object):
         # 加载战斗模块
         self.chaosCombatObj = battle.chaosCombat()
         self.chaosCombatObj.initChaosCombat(self.statesConfig, self.UiCoordi, self.basicUiCtrlObj, self.skillBarRegions)
-        self.skill_Wardancer = skillLists.Wardancer
-        
+        # self.skill_Wardancer = skillLists.Wardancer
+        # self.skill_Artist = skillLists.Artist
         self.chaosCombatObj.saveSkillBarNoCDImage()
     
-        self.chaosCombatObj.loadSkill(self.skill_Wardancer)
-        # self.skill_Artist    = skillLists.Artist
-        # self.skill_Arcanist  = skillLists.Arcanist
+        self.chaosCombatObj.loadSkill(skillLists.Wardancer)
+        # self.chaosCombatObj.loadSkill(self.skill_Wardancer)
+
+        # self.chaosDungeonObj.initChaosDungeon(self.statesConfig, self.UiCoordi, self.basicUiCtrlObj, self.chaosCombatObj)
         
         
     def offlineCheck(self):
@@ -222,7 +226,7 @@ class botStates(object):
             self.basicUiCtrlObj.cleanUi()
 
         self.chaosCombatObj.saveSkillBarNoCDImage()
-        self.chaosCombatObj.loadSkill(self.skill_Wardancer)
+        # self.chaosCombatObj.loadSkill(self.skill_Wardancer)
         # match charcNo:
         #     case 0:
         #         self.charcSkill = skillLists.Wardancer 
@@ -258,38 +262,46 @@ class botStates(object):
             return False
         
     #寻找特定颜色
-    def colorScan(self, targetColor,outline):
+    def colorScan(self, targetColorLow,targetColorUp,outline):
         '''
         扫描特定颜色并按照颜色大小判断
         '''
         #设定颜色HSV范围
-        colorLower = np.array([targetColor[0]-10,targetColor[1]-10,  targetColor[2]])
-        colorUpper = np.array([targetColor[0]+10,255,  targetColor[2]])
+        # colorLower = np.array([targetColor[0]-10,targetColor[1]-10,  targetColor[2]])
+        # colorUpper = np.array([targetColor[0]+10,255,  targetColor[2]])
+        colorLower = np.array(targetColorLow)
+        colorUpper = np.array(targetColorUp)
         #截图
         img = pyautogui.screenshot(region=self.UiRegions["fullScreen"])    
             
         img_cv2 = cv2.cvtColor(np.array(img), cv2.COLOR_RGB2BGR)
     
         #将图像转化为HSV格式
-        img_hls = cv2.cvtColor(img_cv2, cv2.COLOR_BGR2HLS)
+        img_hsv = cv2.cvtColor(img_cv2, cv2.COLOR_BGR2HSV)
         # #去除颜色范围外的其余颜色
-        mask = cv2.inRange(img_hls, colorLower, colorUpper)
+        mask = cv2.inRange(img_hsv, colorLower, colorUpper)
         
         _, binary = cv2.threshold(mask, 0, 255, cv2.THRESH_BINARY)
         
         contours, _ = cv2.findContours(binary, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
         
         if len(contours) > 0:
+            sumX = 0
+            sumY = 0
+            validLen = 0
             #cv2.boundingRect()返回轮廓矩阵的坐标值，四个值为x, y, w, h， 其中x, y为左上角坐标，w,h为矩阵的宽和高
             boxes = [cv2.boundingRect(c) for c in contours]
             for box in boxes:
                 x, y, w, h = box
-                if w>outline[0] and h>outline[1]:
+                if w>=outline[0] and h>=outline[1]:
                 #绘制矩形框对轮廓进行定位
                     monsterX = int(x+w/2)
                     monsterY = int(y+h/2)
+                    sumX = sumX + monsterX +self.statesConfig["windowTopLeft"][0]
+                    sumY = sumY + monsterY +self.statesConfig["windowTopLeft"][1]
+                    validLen = validLen+1
                     #将绘制的图像展示
-                    # cv2.rectangle(img_cv2, (x, y), (x+w, y+h), (0, 0, 233), 2)
+                    # cv2.rectangle(img_cv2, (x, y), (x+w, y+h), (200, 0, 233), 2)
                     # cv2.namedWindow("monster scan result", 0)
                     # cv2.resizeWindow("monster scan result", 960,540)
                     # cv2.moveWindow("monster scan result", 2000,0)
@@ -297,8 +309,11 @@ class botStates(object):
                     # if cv2.waitKey(25) & 0xFF == ord('q'):
                     #     cv2.destroyAllWindows()
                         
-                    return [monsterX,monsterY]  
-        
+                    # return [monsterX,monsterY]  
+            if validLen>0:
+                targetX_mean = round(sumX/validLen)
+                targetY_mean = round(sumY/validLen)
+                return [targetX_mean,targetY_mean]
         #debug
         # cv2.namedWindow("HSV window", 0)
         # cv2.resizeWindow("HSV window", 960,540)
@@ -306,25 +321,131 @@ class botStates(object):
         # cv2.imshow("HSV window", mask)
         # if cv2.waitKey(25) & 0xFF == ord('q'):
         #     cv2.destroyAllWindows()
-        return None       
+        return None    
+       
+#寻找特定颜色
+    def minimapColorScan(self, targetColorLow,targetColorUp,outline, *args):
+        '''
+        扫描特定颜色并按照颜色大小判断
+        '''
+        #设定颜色HSV范围
+        # colorLower = np.array([targetColor[0]-5, targetColor[1]-30,  targetColor[2]-30])
+        # colorUpper = np.array([targetColor[0]+5, targetColor[1]+30,  targetColor[2]+30])
+        colorLower = np.array(targetColorLow)
+        colorUpper = np.array(targetColorUp)
+        #截图
+        img = pyautogui.screenshot(region=self.UiRegions["minimap"])    
+            
+        img_cv2 = cv2.cvtColor(np.array(img), cv2.COLOR_RGB2BGR)
+    
+        #将图像转化为HSV格式
+        img_hsv = cv2.cvtColor(img_cv2, cv2.COLOR_BGR2HSV)
+        # cv2.imshow('img_hsv', img_hsv)
+        # if cv2.waitKey(25) & 0xFF == ord('q'):
+        #     cv2.destroyAllWindows()
+        # #去除颜色范围外的其余颜色
+        mask = cv2.inRange(img_hsv, colorLower, colorUpper)
+        
+        # cv2.imshow('mask', mask)
+        # if cv2.waitKey(25) & 0xFF == ord('q'):
+        #     cv2.destroyAllWindows()
+        _, binary = cv2.threshold(mask, 0, 255, cv2.THRESH_BINARY)
+        
+        contours, _ = cv2.findContours(binary, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+        
+        if len(contours) > 0:
+            #cv2.boundingRect()返回轮廓矩阵的坐标值，四个值为x, y, w, h， 其中x, y为左上角坐标，w,h为矩阵的宽和高
+            boxes = [cv2.boundingRect(c) for c in contours]
+            
+            sumX = 0
+            sumY = 0
+            validLen = 0
+            for box in boxes:
+                x, y, w, h = box
+                if w>=outline[0] and h>=outline[1]:
+                #绘制矩形框对轮廓进行定位
+                    monsterX = int(x+w/2)
+                    monsterY = int(y+h/2)
+                    sumX = sumX + monsterX
+                    sumY = sumY + monsterY
+                    validLen = validLen+1
+                    #将绘制的图像展示
+                    if len(args)!=0:
+                        cv2.rectangle(img_cv2, (x, y), (x+w, y+h), (30, 117, 223), 2)
+                        cv2.namedWindow("monster scan result", 0)
+                        cv2.resizeWindow("monster scan result", 294*2,254*2)
+                        cv2.moveWindow("monster scan result", 2000,0)
+                        cv2.imshow('monster scan result', img_cv2)
+                        if cv2.waitKey(25) & 0xFF == ord('q'):
+                            cv2.destroyAllWindows()
+                    
+                    # return [monsterX,monsterY]  
+            if validLen>0:
+                targetX_mean = round(sumX/validLen)
+                targetY_mean = round(sumY/validLen)
+                return [targetX_mean,targetY_mean]
+        #debug
+        
+        # cv2.namedWindow("ORG window", 0)
 
+        # cv2.moveWindow("ORG window", 2400,500)
+        # cv2.imshow("ORG window", img_cv2)
+        # if cv2.waitKey(25) & 0xFF == ord('q'):
+        #     cv2.destroyAllWindows()
+        
+        return None    
+
+    def repairAll(self):
+        '''
+        Function with all steps to repair the fishing rod through the pet inventory
+        '''
+        print("开始宠物修理")
+        realManSim.manSimMultiKey("alt","p") #打开宠物界面
+
+        realManSim.manSimWaitMedim()
+
+        self.basicUiCtrlObj.botPicCheckAndClick("fullScreen","petRepairEquip.bmp")
+        time.sleep(1)
+        self.basicUiCtrlObj.botPicCheckAndClick("fullScreen","repairAllEquip.bmp")
+        time.sleep(1)   
+        self.basicUiCtrlObj.botPicCheckAndClick("fullScreen","repairLiftTool.bmp")
+        time.sleep(1)           
+        self.basicUiCtrlObj.botPicCheckAndClick("fullScreen","batchRepair.bmp")
+        time.sleep(1)     
+        self.basicUiCtrlObj.clickOkButton()
+        time.sleep(1) 
+        self.basicUiCtrlObj.cleanUi()
+        time.sleep(1) 
+        self.basicUiCtrlObj.cleanUi()
 
 def getPixlHSV():
-    while (1):
-        pos = pyautogui.position()# 获取鼠标当前的位置
-        color = pyautogui.pixel(pos[0],pos[1]) #获取指定位置的色值
-        print('RGB色值{}'.format(color))
-        
-        cv2Pix = np.uint8([[color]])
-        cv2Pix = cv2.cvtColor(cv2Pix, cv2.COLOR_RGB2BGR)
-        color_hsv = cv2.cvtColor(cv2Pix, cv2.COLOR_BGR2HSV)
-        print('color_hsv色值{}'.format(color_hsv))
-        time.sleep(1)        
+    pos = pyautogui.position()# 获取鼠标当前的位置
+    color = pyautogui.pixel(pos[0],pos[1]) #获取指定位置的色值
+    # print('RGB色值{}'.format(color))
+    
+    cv2Pix = np.uint8([[color]])
+    cv2Pix = cv2.cvtColor(cv2Pix, cv2.COLOR_RGB2BGR)
+    color_hsv = cv2.cvtColor(cv2Pix, cv2.COLOR_BGR2HSV)
+    print('color_hsv色值{}'.format(color_hsv))
+    time.sleep(1)        
 
+def getPixlHLS():
+    pos = pyautogui.position()# 获取鼠标当前的位置
+    color = pyautogui.pixel(pos[0],pos[1]) #获取指定位置的色值
+    # print('RGB色值{}'.format(color))
+    
+    cv2Pix = np.uint8([[color]])
+    cv2Pix = cv2.cvtColor(cv2Pix, cv2.COLOR_RGB2BGR)
+    color_hls = cv2.cvtColor(cv2Pix, cv2.COLOR_BGR2HLS)
+    print('color_hls色值{}'.format(color_hls))
+    time.sleep(1)       
         
 if __name__ == '__main__':
     botStatesObj = botStates()
     botStatesObj.initBot()
+    
+    # botStatesObj.repairAll()
+    # botStatesObj.basicUiCtrlObj.cleanUi()
     
     #测试gaodeNavig功能
     # botStatesObj.amapObj.loadBigMap("lopang")
@@ -336,22 +457,56 @@ if __name__ == '__main__':
     #         botStatesObj.amapObj.drawLocateResult(loc)
     #         print(loc)
     
-    re = botStatesObj.basicUiCtrlObj.botPicCheck("EvnaTaskFinishedCheck","taskDestinyEyeStatus.bmp")
-    if re != None:
-        x, y = re
-        realManSim.manSimMoveAndLeftClick(x, y)
+    # re = botStatesObj.basicUiCtrlObj.botPicCheck("EvnaTaskFinishedCheck","taskDestinyEyeStatus.bmp")
+    # if re != None:
+    #     x, y = re
+    #     realManSim.manSimMoveAndLeftClick(x, y)
 
     # 测试找色功能
-    # h = 90
-    # s = 19
-    # v = 255
-    # while (1):
-    #     targetColor=[h,s,v]
-    #     outline=[50,50]
-    #     re = botStatesObj.colorScan(targetColor,outline)
-
-    #     print(re)
-        # time.sleep(1)
+    # h = 3
+    # l = 204
+    # s = 115
+    targetColorLow=[80,10,200]
+    targetColorUp=[110,100,255]
+    teamColorLow = [100,80,125]
+    teamColorUp = [109,200,255]
+    teamoutline =[4,4]
+    destSliceColorLow=[0,0,220]  #小地图上命运片段颜色
+    destSliceColorUp =[20,18,255]
+    chaosTowerColorLow= [170,76,190]
+    chaosTowerColorUp = [190,200,255]
+    chaosTowerOutline = [2,2]
+    teamHpColorLow = [85,180,160]
+    teamHpColorUp  = [95,255,200]
+    
+    teamHpOutline=[30,2]
+    
+    watchColorLow=[70,9,30] #守望者触角颜色m
+    watchColorUp =[110,255,255] #守望者触角颜色m
+    outline = [50,50] #轮廓大小
+    
+    role = botStatesObj.UiCoordi["screenCenter"]
+    while (1):
+        getPixlHSV()
+        # getPixlHLS()
+        # targetColor=[h,l,s]
+        # re = botStatesObj.minimapColorScan(targetColorLow,targetColorUp,teamoutline)
+        # re = botStatesObj.minimapColorScan(destSliceColorLow,destSliceColorUp,outline)
+        # re = botStatesObj.colorScan(watchColorLow,watchColorUp,outline)
+        # re = botStatesObj.colorScan(teamHpColorLow,teamHpColorUp,teamHpOutline)
+        # if re!=None:
+        #     distance = libMathFigo.eucliDist(re,role)
+        #     print(distance)
+        #     if distance > 200:
+        #         tarX,tarY = re
+        #         realManSim.manSimMoveTo(tarX,tarY)
+        #         time.sleep(2)
+        # re = botStatesObj.minimapColorScan(teamColorLow,teamColorUp,teamoutline,'plot')
+        re = botStatesObj.minimapColorScan(chaosTowerColorLow,chaosTowerColorUp,chaosTowerOutline,'plot')
+        if re!= None:
+            (tarX,tarY) = botStatesObj.basicUiCtrlObj.miniMapTargetCal(re)
+            realManSim.manSimMoveTo(tarX,tarY)
+            time.sleep(2)
     # re = botStatesObj.isCharc0Check()
     # if ~re:
     #     botStatesObj.switchCharacterTo(0)

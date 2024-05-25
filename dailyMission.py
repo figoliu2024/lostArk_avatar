@@ -208,6 +208,12 @@ def rapportPlayMusic(botStatesObj):
     x,y = botStatesObj.basicUiCtrlObj.botPicCheck("fullScreen","playMusic.bmp")
     realManSim.manSimMoveAndLeftClick(x, y)
     time.sleep(1)
+    re = botStatesObj.basicUiCtrlObj.botPicCheck("fullScreen","rapportTimesOver.bmp")
+    if re != None:
+        print("演奏音乐次数用完")
+        realManSim.manSimPressKey("esc")
+        return False
+    
     re = botStatesObj.basicUiCtrlObj.botPicCheck("fullScreen","allowPlayMusic.bmp")
     if re != None:
         x,y = re
@@ -224,6 +230,12 @@ def rapportShowEmoji(botStatesObj):
     x,y = botStatesObj.basicUiCtrlObj.botPicCheck("fullScreen","showEmoji.bmp")
     realManSim.manSimMoveAndLeftClick(x, y)
     time.sleep(1)
+    re = botStatesObj.basicUiCtrlObj.botPicCheck("fullScreen","rapportTimesOver.bmp")
+    if re != None:
+        print("表现情感次数用完")
+        realManSim.manSimPressKey("esc")
+        return False
+    
     re = botStatesObj.basicUiCtrlObj.botPicCheck("fullScreen","allowShowEmoji.bmp")
     if re != None:
         x,y = re
@@ -244,25 +256,7 @@ def rapportShowEmoji(botStatesObj):
 
 #好感度日常
 def doRapport(botStatesObj):   
-    #npc 000
-    # realManSim.manSimPressKey("G")
-    # time.sleep(1)
-    # #检查是否在npc沟通界面
-    # re = botStatesObj.basicUiCtrlObj.botPicCheck("fullScreen","inNpcRapportUi.bmp")
-    # if re == None:
-    #     #transport to first rapport NPC
-    #     re = botStatesObj.amapObj.bifrostRemarksGoTo("rapportNPC000.bmp")
-    #     realManSim.manSimPressKey("G")
-    #     if not re:
-    #         return False
-    # #演奏音乐
-    # rapportPlayMusic(botStatesObj)
-    # rapportPlayMusic(botStatesObj)    
-    # #表现情感
-    # rapportShowEmoji(botStatesObj) 
-    # rapportShowEmoji(botStatesObj) 
-    # botStatesObj.basicUiCtrlObj.cleanUi()
-        
+
     #npc 000
     re = botStatesObj.amapObj.bifrostRemarksGoTo("rapportNPC000.bmp")
     if re:
@@ -359,21 +353,21 @@ def acceptBreakStoneDaily(botStatesObj):
         return False
     else:
         #接受解放奴隶任务并直接点击完成
-        re = botStatesObj.basicUiCtrlObj.botPicCheck("EvnaTaskPanel","taskFreeSlaves.bmp")
-        if re != None:
-            x,y = re
-            x = x+832
-            realManSim.manSimMoveAndLeftClick(x, y)
-            time.sleep(1)
-            #点击完成
-            realManSim.manSimMoveAndLeftClick(x, y)
-            time.sleep(1)
+        # re = botStatesObj.basicUiCtrlObj.botPicCheck("EvnaTaskPanel","taskFreeSlaves.bmp")
+        # if re != None:
+        #     x,y = re
+        #     x = x+832
+        #     realManSim.manSimMoveAndLeftClick(x, y)
+        #     time.sleep(1)
+        #     #点击完成
+        #     realManSim.manSimMoveAndLeftClick(x, y)
+        #     time.sleep(1)
             
-            botStatesObj.basicUiCtrlObj.clickOkButton()
-        else:
-            botStatesObj.logger.error("charctor[%s]-> didn't find BreakStone task" %botStatesObj.statesConfig["currentCharacter"] )
-            botStatesObj.basicUiCtrlObj.cleanUi()
-            return False
+        #     botStatesObj.basicUiCtrlObj.clickOkButton()
+        # else:
+        #     botStatesObj.logger.error("charctor[%s]-> didn't find BreakStone task" %botStatesObj.statesConfig["currentCharacter"] )
+        #     botStatesObj.basicUiCtrlObj.cleanUi()
+        #     return False
         #接受日常2
         re = botStatesObj.basicUiCtrlObj.botPicCheck("EvnaTaskPanel","taskWatchman.bmp")
         if re != None:
@@ -417,14 +411,14 @@ def doBreakStoneDaily(botStatesObj):
     if not re:
         return False
 
-    h = 90
-    s = 19
-    v = 255
-    targetColor=[h,s,v] #守望者触角颜色m
+
+    watchColorLow=[70,9,255] #守望者触角颜色m
+    watchColorUp =[110,255,255] #守望者触角颜色m
+    
     outline=[50,50] #轮廓大小
     
     while(1):
-        re = botStatesObj.colorScan(targetColor,outline)
+        re = botStatesObj.colorScan(watchColorLow,watchColorUp,outline)
         
         startTime = time.time()
         botStatesObj.logger.info("charctor:%s-> 扫描守望者" %botStatesObj.statesConfig["currentCharacter"] )
@@ -456,95 +450,73 @@ def doBreakStoneDaily(botStatesObj):
                 exit()
         
     # 纪念仪式任务
-    # 传送至黑森林
-    re = botStatesObj.basicUiCtrlObj.botPicCheck("EvnaTaskFinishedCheck","taskDestinyEyeStatus.bmp")
-    if re != None:
-        x, y = re
-        x = x+187
-        realManSim.manSimMoveAndLeftClick(x, y)
-        time.sleep(1)
-        re = botStatesObj.basicUiCtrlObj.botPicCheck("fullScreen","blackForestTransport.bmp")
-        if re != None:
-            x, y = re
-            x = x-27
-            realManSim.manSimMoveAndLeftClick(x, y)
-            time.sleep(1)
-            botStatesObj.basicUiCtrlObj.clickOkButton()
-            time.sleep(3)
-            botStatesObj.basicUiCtrlObj.waitGameLoding()
-        else:
-            return False
+
     # 传送至黑森林
     botStatesObj.logger.info("charctor:%s-> bifrost Go To 费顿" %botStatesObj.statesConfig["currentCharacter"] )
     re = botStatesObj.amapObj.bifrostGoTo("feidun_BifrostDestiTask.bmp")
     if not re:
         return False
+   
+    re = botStatesObj.basicUiCtrlObj.botPicCheck("EvnaTaskFinishedCheck","taskDestinyEyeFinished.bmp")
+    x,y = re
+    x = x-77
+    y = y+59
+    custRegion = [x,y,35,40]
+    startTime = time.time()
+    while (1):
+        realManSim.manSimPressKey("G")
+        time.sleep(5)
+        re = botStatesObj.basicUiCtrlObj.botPicCustomCheck(custRegion,"taskDestinyEyeStatus_stage1Finished.bmp")
+        if re==None:
+            #被打断，尝试攻击
+            botStatesObj.chaosCombatObj.enemyDirect = botStatesObj.UiCoordi["screenCenter"]
+            botStatesObj.chaosCombatObj.enemyDirect[0] = botStatesObj.chaosCombatObj.enemyDirect[0]-200
+            botStatesObj.chaosCombatObj.enemyDirect[1] = botStatesObj.chaosCombatObj.enemyDirect[1]-200  
+            botStatesObj.chaosCombatObj.castSkill("S")
+            botStatesObj.chaosCombatObj.castSkill("F")
+            botStatesObj.chaosCombatObj.castSkill("W")
+            time.sleep(3)
+            curTime = time.time()
+            if curTime-startTime>50:
+                botStatesObj.logger.error("stack in 金塞拉任务 阶段1, bot exist")
+                exit()
+        else:
+            #拾取成功
+            botStatesObj.logger.info("charctor:%s-> taskDestinyEyeStatus_stage1 Finished" %botStatesObj.statesConfig["currentCharacter"] )
+            break
+        
 
-    realManSim.manSimPressKey("G")
-    time.sleep(3.5)
-    botStatesObj.chaosCombatObj.castSkill("F")
-    time.sleep(1)
-    realManSim.manSimPressKey("G")
-    time.sleep(3.5)
-    # 移动至头部任务捡拾点
-    # re = botStatesObj.basicUiCtrlObj.botPicCheck("fullScreen","blackForest_startpoint.bmp")
-    # x,y = re
-    # x=x-270
-    # y=y-135
-    # realManSim.manSimMoveAndRightClick(x, y)
-    # time.sleep(2)
-    # realManSim.manSimPressKey("F1")
-    # time.sleep(3)
-    # botStatesObj.feidunMoveObj.runToblackForesetToFirstPoint()
-    # realManSim.manSimPressKey("R")
-    # time.sleep(1)
-
-    # #消灭怪物
-    # realManSim.manSimPressKey("G")
-    # time.sleep(3.5)
-    # botStatesObj.chaosCombatObj.enemyDirect = botStatesObj.UiCoordi["screenCenter"]
-    # botStatesObj.chaosCombatObj.enemyDirect[0] = botStatesObj.chaosCombatObj.enemyDirect[0]-200
-    # botStatesObj.chaosCombatObj.enemyDirect[1] = botStatesObj.chaosCombatObj.enemyDirect[1]-200  
-    # botStatesObj.chaosCombatObj.castSkill("F")
-    # botStatesObj.chaosCombatObj.castSkill("W")
-    # time.sleep(2)
-    # botStatesObj.chaosCombatObj.castSkill("Q")
-    # realManSim.manSimPressKey("G")
-    # time.sleep(3.5)
-    
     realManSim.manSimPressKey("F1")
     time.sleep(3)
     botStatesObj.feidunMoveObj.runToblackForesetToSecondPoint()
+    time.sleep(3)
     realManSim.manSimPressKey("R")
-    time.sleep(1)
-    realManSim.manSimPressKey("G")
-    time.sleep(3.5)
-    botStatesObj.chaosCombatObj.enemyDirect = botStatesObj.UiCoordi["screenCenter"]
-    botStatesObj.chaosCombatObj.enemyDirect[0] = botStatesObj.chaosCombatObj.enemyDirect[0]-200
-    botStatesObj.chaosCombatObj.enemyDirect[1] = botStatesObj.chaosCombatObj.enemyDirect[1]-200  
-    botStatesObj.chaosCombatObj.castSkill("F")
-    botStatesObj.chaosCombatObj.castSkill("W")
-    time.sleep(2)
-    botStatesObj.chaosCombatObj.castSkill("E")
-    realManSim.manSimPressKey("G")
-    time.sleep(3.5)
-    
     re=botStatesObj.basicUiCtrlObj.botPicCheck("EvnaTaskFinishedCheck","taskDestinyEyeFinished.bmp")
-    if re!=None:
-        x,y = re
-        taskJudgeRegion = [x-89,y-14,34,26]
-        pic = "taskFinishedMark.bmp"
-        re = pyautogui.locateCenterOnScreen(
-            botStatesObj.picPath+pic,
-            confidence=0.8,
-            region=taskJudgeRegion,
-        )
-        if re!=None:
-            botStatesObj.logger.info("charctor:%s-> 金塞拉任务完成" %botStatesObj.statesConfig["currentCharacter"] )
+    x,y = re
+    custRegion = [x-89,y-14,34,26]
+    startTime = time.time()
+    while (1):
+        realManSim.manSimPressKey("G")
+        time.sleep(5)
+        re = botStatesObj.basicUiCtrlObj.botPicCustomCheck(custRegion,"taskFinishedMark.bmp")
+        if re==None:
+            #被打断，尝试攻击
+            botStatesObj.chaosCombatObj.enemyDirect = botStatesObj.UiCoordi["screenCenter"]
+            botStatesObj.chaosCombatObj.enemyDirect[0] = botStatesObj.chaosCombatObj.enemyDirect[0]-200
+            botStatesObj.chaosCombatObj.enemyDirect[1] = botStatesObj.chaosCombatObj.enemyDirect[1]+200  
+            botStatesObj.chaosCombatObj.castSkill("S")
+            botStatesObj.chaosCombatObj.castSkill("F")
+            botStatesObj.chaosCombatObj.castSkill("W")
+            time.sleep(3)
+            curTime = time.time()
+            if curTime-startTime>50:
+                botStatesObj.logger.error("stack in 金塞拉任务 阶段2 bot exist")
+                exit()
         else:
-            botStatesObj.logger.error("charctor:%s-> 金塞拉任务失败" %botStatesObj.statesConfig["currentCharacter"] )    
-            exit()  
-        
+            #拾取成功
+            botStatesObj.logger.info("charctor:%s-> 金塞拉任务完成" %botStatesObj.statesConfig["currentCharacter"] )
+            break
+       
     re = botStatesObj.basicUiCtrlObj.botPicCheck("EvnaTaskFinishedCheck","taskDestinyEyeStatus.bmp")
     if re != None:
         x, y = re
@@ -610,7 +582,7 @@ def startDaily(startRole):
             if botStatesObj.Characters[curChar]["rapport"] and botStatesObj.statesConfig["enableRapport"]:
                 doRapport(botStatesObj)          
             #breakStone
-            if botStatesObj.Characters[curChar]["breakStone"] and botStatesObj.statesConfig["enableRapport"]:
+            if botStatesObj.Characters[curChar]["breakStone"] and botStatesObj.statesConfig["enableBreakStone"]:
                 doBreakStoneDaily(botStatesObj)
                 
             botStatesObj.statesConfig["finishedCharacter"] = botStatesObj.statesConfig["finishedCharacter"]+1
@@ -646,7 +618,7 @@ def startDaily(startRole):
     botStatesObj.logger.info("All daily task finished ")            
 
 if __name__ == "__main__":
-    startRole = 2
+    startRole = 1
     startDaily(startRole)
 
 
@@ -655,6 +627,8 @@ if __name__ == "__main__":
     # botStatesObj.initBot()
     # acceptBreakStoneDaily(botStatesObj)
     # doRapport(botStatesObj)
+    
+    # rapportPlayMusic(botStatesObj)
     # acceptLopangDaily(botStatesObj)
     # doGuildDonation(botStatesObj)
     # realManSim.manSimPressKey("G")
@@ -665,3 +639,26 @@ if __name__ == "__main__":
     # botStatesObj.chaosCombatObj.saveSkillBarNoCDImage()
     # botStatesObj.chaosCombatObj.loadSkill(botStatesObj.skill_Wardancer)
     # doBreakStoneDaily(botStatesObj)
+
+
+
+
+
+    # 传送至黑森林
+    # re = botStatesObj.basicUiCtrlObj.botPicCheck("EvnaTaskFinishedCheck","taskDestinyEyeStatus.bmp")
+    # if re != None:
+    #     x, y = re
+    #     x = x+187
+    #     realManSim.manSimMoveAndLeftClick(x, y)
+    #     time.sleep(1)
+    #     re = botStatesObj.basicUiCtrlObj.botPicCheck("fullScreen","blackForestTransport.bmp")
+    #     if re != None:
+    #         x, y = re
+    #         x = x-27
+    #         realManSim.manSimMoveAndLeftClick(x, y)
+    #         time.sleep(1)
+    #         botStatesObj.basicUiCtrlObj.clickOkButton()
+    #         time.sleep(3)
+    #         botStatesObj.basicUiCtrlObj.waitGameLoding()
+    #     else:
+    #         return False
