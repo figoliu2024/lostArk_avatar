@@ -41,6 +41,8 @@ class chaosDungeon(object):
     redHpColor =[61,5,0] #屏幕上的血条颜色
     curClass = [] #当前职业
     
+    usedpPotions = 0 #已使用的血瓶数量
+    
     def __init__(self) -> None:
         '''
         初始化一些数据结构：堆、集合帮助实现算法
@@ -173,7 +175,9 @@ class chaosDungeon(object):
             time.sleep(5)
             realManSim.manSimPressKey("ESC")
             time.sleep(1)
-            self.botStatesObj.basicUiCtrlObj.botPicCheckAndClick("fullScreen","chaosQuit.bmp")
+            self.botStatesObj.basicUiCtrlObj.botPicCheckAndClick("chaosStateRegion","defolderChaosStates.bmp")
+            time.sleep(1)
+            self.botStatesObj.basicUiCtrlObj.botPicCheckAndClick("chaosStateRegion","chaosQuit.bmp")
             time.sleep(1)
             self.botStatesObj.basicUiCtrlObj.clickOkButton()
             re = self.botStatesObj.basicUiCtrlObj.waitBlackGameLoding()
@@ -220,7 +224,7 @@ class chaosDungeon(object):
         '''
         屏幕上找蓝色队友血条并靠近
         '''    
-        re = botStatesObj.colorScan(self.teamHpColorLow,self.teamHpColorUp,self.teamHpOutline)
+        re = self.botStatesObj.colorScan(self.teamHpColorLow,self.teamHpColorUp,self.teamHpOutline)
         if re!= None:
             print("朝队友移动")
             (tarX,tarY) = re 
@@ -233,22 +237,42 @@ class chaosDungeon(object):
         '''
         小地图上上找蓝色队又并靠近
         '''    
-        re = botStatesObj.minimapColorScan(self.teamColorLow,self.teamColorUp,self.teamOutline)
+        re = self.botStatesObj.minimapColorScan(self.teamColorLow,self.teamColorUp,self.teamOutline)
         if re!= None:
             print("朝队友移动")
-            (tarX,tarY) = botStatesObj.basicUiCtrlObj.miniMapTargetCal(re)
+            (tarX,tarY) = self.botStatesObj.basicUiCtrlObj.miniMapTargetCal(re)
             (tarX,tarY) = re 
             realManSim.manSimMoveAndRightClick(tarX,tarY)
             time.sleep(1.5)
             return re
             # self.botStatesObj.chaosCombatObj.enemyDirect = (tarX,tarY)            
-            
+    
+    def checkHp_drinkPotions(self):
+        '''
+        小地图上上找蓝色队又并靠近
+        '''   
+        hp=self.botStatesObj.chaosCombatObj.checkHealHP()
+        if self.usedpPotions<10:
+            #防止bug导致无限喝水，直接放生
+            match hp:
+                case "lowHp":
+                    realManSim.manSimPressKey("1")
+                    print("血量低于30，开始喝大药水")
+                    self.usedpPotions = self.usedpPotions+1
+                case "midHp":
+                    realManSim.manSimPressKey("5")
+                    print("血量低于50，开始喝霄药水")
+                    self.usedpPotions = self.usedpPotions+1
+                case "highHp":
+                    print("血量低于80，不干啥")
+                case _:
+                    print("血量高于80，不干啥")
     
     def doChaosFloor1_matchMode(self):
         '''
         执行第一阶段chaos战斗
         '''    
-
+        self.usedpPotions = 0
         print("开始chaos阶段: floor 1")
         # enemyBarColor_RGB = (237,59,7) #血条颜色
         randCastTime = time.time()
@@ -289,6 +313,10 @@ class chaosDungeon(object):
             
             #定时扔大招或特殊技能
             if curTime-randCastTime>20:
+                #检查血量喝血瓶
+                self.checkHp_drinkPotions()
+                
+                
                 match self.curClass:
                     case "Wardancer":
                         realManSim.manSimPressKey("F")
@@ -305,7 +333,7 @@ class chaosDungeon(object):
                         time.sleep(0.5)
                         realManSim.manSimPressKey("V")
                     case _:
-                        print("not support"+self.curClass)
+                        print("not support current class")
                 randCastTime = time.time()
             
     def doChaosFloor2_matchMode(self):
@@ -319,7 +347,7 @@ class chaosDungeon(object):
         '''
         执行第3阶段chaos战斗
         '''    
-
+        self.usedpPotions = 0
         print("开始chaos阶段: floor 3")
         # enemyBarColor_RGB = (237,59,7) #血条颜色
         randCastTime = time.time()
@@ -327,19 +355,17 @@ class chaosDungeon(object):
         self.botStatesObj.chaosCombatObj.enemyDirect = self.botStatesObj.UiCoordi["screenCenter"]
         role = self.botStatesObj.UiCoordi["screenCenter"]
         while(1):
-
-                
             #检查tower位置并移动
-            re = botStatesObj.minimapColorScan(self.chaosTowerColorLow,self.chaosTowerColorUp,self.chaosTowerOutline)
+            re = self.botStatesObj.minimapColorScan(self.chaosTowerColorLow,self.chaosTowerColorUp,self.chaosTowerOutline)
             if re!= None:
-                (tarX,tarY) = botStatesObj.basicUiCtrlObj.miniMapTargetCal(re)
+                (tarX,tarY) = self.botStatesObj.basicUiCtrlObj.miniMapTargetCal(re)
                 distance = libMathFigo.eucliDist((tarX,tarY) ,role)
                 if distance > 10:
                     realManSim.manSimMoveAndRightClick(tarX,tarY)
-                    time.sleep(2)
+                    time.sleep(1)
             else:
                 #优先检查队友位置
-                re = botStatesObj.colorScan(self.teamHpColorLow,self.teamHpColorUp,self.teamHpOutline)
+                re = self.botStatesObj.colorScan(self.teamHpColorLow,self.teamHpColorUp,self.teamHpOutline)
                 if re!=None:
                     distance = libMathFigo.eucliDist(re,role)
                     print(distance)
@@ -353,13 +379,13 @@ class chaosDungeon(object):
                 else:
                     #小地图跟踪队友位置
                     print("队友血条丢失，尝试小地图跟踪")
-                    re = botStatesObj.minimapColorScan(self.teamColorLow,self.teamColorUp,self.teamOutline)
+                    re = self.botStatesObj.minimapColorScan(self.teamColorLow,self.teamColorUp,self.teamOutline)
                     if re!= None:
-                        (tarX,tarY) = botStatesObj.basicUiCtrlObj.miniMapTargetCal(re)
+                        (tarX,tarY) = self.botStatesObj.basicUiCtrlObj.miniMapTargetCal(re)
                         distance = libMathFigo.eucliDist((tarX,tarY) ,role)
                         if distance > 100:
                             realManSim.manSimMoveAndRightClick(tarX,tarY)
-                            time.sleep(2)
+                            time.sleep(1)
                     else:
                         ##攻击目标
                         self.botStatesObj.chaosCombatObj.comboListCast()
@@ -374,6 +400,8 @@ class chaosDungeon(object):
             #定时扔大招或特殊技能
             curTime = time.time()
             if curTime-randCastTime>10:
+                #检查血量喝血瓶
+                self.checkHp_drinkPotions()
                 match self.curClass:
                     case "Wardancer":
                         realManSim.manSimPressKey("V")
@@ -387,9 +415,8 @@ class chaosDungeon(object):
                         realManSim.manSimPressKey("X")
                         time.sleep(0.5)
                         realManSim.manSimPressKey("V")                        
-                        
                     case _:
-                        print("not support"+self.curClass)
+                        print("not support current class")
                 randCastTime = time.time()
            
             #检查是否完成地牢
@@ -410,7 +437,7 @@ class chaosDungeon(object):
             if re:
                 break
             else:
-                botStatesObj.basicUiCtrlObj.cleanUi()
+                self.botStatesObj.basicUiCtrlObj.cleanUi()
                 return False
         
         # 2.执行阶段1
@@ -451,10 +478,10 @@ if __name__ == "__main__":
     botStatesObj.initBot()
     chaosDungeonObj = chaosDungeon()   
     chaosDungeonObj.initChaosDungeon(botStatesObj)
-    
     chaosDungeonObj.checkReloadSkill()
     chaosDungeonObj.doChaos_matchMode()
-    # chaosDungeonObj.doChaos_matchMode()
+    chaosDungeonObj.doChaos_matchMode()
+    # chaosDungeonObj.checkChaosFinished()
     
     
     # while(1):

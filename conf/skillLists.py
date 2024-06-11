@@ -123,7 +123,7 @@ Artist = {
         "hold": False,
         "holdTime": None,
         "cast": False,
-        "castTime": None,
+        "castTime": 500,
         "directional": True,
     },
     "E":{

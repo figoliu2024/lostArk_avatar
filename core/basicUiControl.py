@@ -228,6 +228,7 @@ class basicUiCtrl(object):
                 if curTime-startTime>50:
                     self.logger.error("stack in game loading stage, bot exist")
                     return False
+        return True 
     
     def waitBlackGameLoding(self):
         '''
@@ -276,13 +277,22 @@ class basicUiCtrl(object):
             realManSim.manSimPressKey("esc")
 
         time.sleep(1)
-        
-        
+    
         re = self.botPicCheck("fullScreen","ReminderItemClose.bmp")
         if re!=None:
             x,y = re
             realManSim.manSimMoveAndLeftClick(x=x, y=y)
             time.sleep(1)
+            
+        re = self.botPicCheck("fullScreen","activityFold.bmp")
+        if re!=None:
+            x,y = re
+            realManSim.manSimMoveAndLeftClick(x=x, y=y)
+            time.sleep(1)    
+            
+        x,y = self.UiCoordi["folderChatWindow"]
+        realManSim.manSimMoveAndLeftClick(x=x, y=y)
+            
         return    
     
     def miniMapTargetCal(self,target):
@@ -314,6 +324,6 @@ class basicUiCtrl(object):
 if __name__ == "__main__":
     print("start basicUiCtrl Test")
     basicUiCtrlObj = basicUiCtrl()
-    # basicUiCtrlObj.cleanUi()
-    basicUiCtrlObj.waitBlackGameLoding()
+    basicUiCtrlObj.cleanUi()
+    # basicUiCtrlObj.waitBlackGameLoding()
     

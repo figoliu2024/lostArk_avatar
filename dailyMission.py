@@ -7,7 +7,7 @@ import db
 import time
 import pyautogui
 from core import realManSim
-
+from core.chaosDungeon import chaosDungeon
 
 def doGuildDonation(botStatesObj):
     botStatesObj.logger.info("charctor:%s-> start guildDono" %botStatesObj.statesConfig["currentCharacter"] )
@@ -353,21 +353,21 @@ def acceptBreakStoneDaily(botStatesObj):
         return False
     else:
         #接受解放奴隶任务并直接点击完成
-        # re = botStatesObj.basicUiCtrlObj.botPicCheck("EvnaTaskPanel","taskFreeSlaves.bmp")
-        # if re != None:
-        #     x,y = re
-        #     x = x+832
-        #     realManSim.manSimMoveAndLeftClick(x, y)
-        #     time.sleep(1)
-        #     #点击完成
-        #     realManSim.manSimMoveAndLeftClick(x, y)
-        #     time.sleep(1)
+        re = botStatesObj.basicUiCtrlObj.botPicCheck("EvnaTaskPanel","taskFreeSlaves.bmp")
+        if re != None:
+            x,y = re
+            x = x+832
+            realManSim.manSimMoveAndLeftClick(x, y)
+            time.sleep(1)
+            #点击完成
+            realManSim.manSimMoveAndLeftClick(x, y)
+            time.sleep(1)
             
-        #     botStatesObj.basicUiCtrlObj.clickOkButton()
-        # else:
-        #     botStatesObj.logger.error("charctor[%s]-> didn't find BreakStone task" %botStatesObj.statesConfig["currentCharacter"] )
-        #     botStatesObj.basicUiCtrlObj.cleanUi()
-        #     return False
+            botStatesObj.basicUiCtrlObj.clickOkButton()
+        else:
+            botStatesObj.logger.error("charctor[%s]-> didn't find BreakStone task" %botStatesObj.statesConfig["currentCharacter"] )
+            botStatesObj.basicUiCtrlObj.cleanUi()
+            return False
         #接受日常2
         re = botStatesObj.basicUiCtrlObj.botPicCheck("EvnaTaskPanel","taskWatchman.bmp")
         if re != None:
@@ -503,7 +503,7 @@ def doBreakStoneDaily(botStatesObj):
             #被打断，尝试攻击
             botStatesObj.chaosCombatObj.enemyDirect = botStatesObj.UiCoordi["screenCenter"]
             botStatesObj.chaosCombatObj.enemyDirect[0] = botStatesObj.chaosCombatObj.enemyDirect[0]-200
-            botStatesObj.chaosCombatObj.enemyDirect[1] = botStatesObj.chaosCombatObj.enemyDirect[1]+200  
+            botStatesObj.chaosCombatObj.enemyDirect[1] = botStatesObj.chaosCombatObj.enemyDirect[1]-100  
             botStatesObj.chaosCombatObj.castSkill("S")
             botStatesObj.chaosCombatObj.castSkill("F")
             botStatesObj.chaosCombatObj.castSkill("W")
@@ -516,24 +516,34 @@ def doBreakStoneDaily(botStatesObj):
             #拾取成功
             botStatesObj.logger.info("charctor:%s-> 金塞拉任务完成" %botStatesObj.statesConfig["currentCharacter"] )
             break
-       
-    re = botStatesObj.basicUiCtrlObj.botPicCheck("EvnaTaskFinishedCheck","taskDestinyEyeStatus.bmp")
-    if re != None:
-        x, y = re
-        x = x+187
-        realManSim.manSimMoveAndLeftClick(x, y)
-        time.sleep(1)
-        re = botStatesObj.basicUiCtrlObj.botPicCheck("fullScreen","blackHawkHotel.bmp")
+    
+    while(1):   
+        re = botStatesObj.basicUiCtrlObj.botPicCheck("EvnaTaskFinishedCheck","taskDestinyEyeStatus.bmp")
         if re != None:
             x, y = re
-            x = x
+            x = x+187
             realManSim.manSimMoveAndLeftClick(x, y)
             time.sleep(1)
-            botStatesObj.basicUiCtrlObj.clickOkButton()
-            time.sleep(3)
-            botStatesObj.basicUiCtrlObj.waitGameLoding()
-        else:
-            return False
+            re = botStatesObj.basicUiCtrlObj.botPicCheck("fullScreen","blackHawkHotel.bmp")
+            if re != None:
+                x, y = re
+                x = x
+                realManSim.manSimMoveAndLeftClick(x, y)
+                time.sleep(1)
+                botStatesObj.basicUiCtrlObj.clickOkButton()
+                time.sleep(3)
+                re = botStatesObj.basicUiCtrlObj.waitGameLoding()
+                if re:
+                    #传送成功
+                    break
+                else:
+                    botStatesObj.chaosCombatObj.castSkill("S")
+                    botStatesObj.chaosCombatObj.castSkill("F")
+                    botStatesObj.chaosCombatObj.castSkill("W")
+                    print("被打打断")
+            else:
+                return False
+            
     realManSim.manSimPressKey("F1")
     time.sleep(3)
     botStatesObj.feidunMoveObj.runToblackHawkHotelToFirstPoint()
@@ -546,6 +556,15 @@ def doBreakStoneDaily(botStatesObj):
     #提交任务
     botStatesObj.basicUiCtrlObj.finishTaskAcptRewards()
     botStatesObj.logger.info("charctor:%s-> BreakStone Daily tasks finished ! :)" %botStatesObj.statesConfig["currentCharacter"] )
+
+#开始地牢日常
+def doChaosDaily(botStatesObj):
+    chaosDungeonObj = chaosDungeon()
+    chaosDungeonObj.initChaosDungeon(botStatesObj)
+    chaosDungeonObj.checkReloadSkill()
+    chaosDungeonObj.doChaos_matchMode()
+    chaosDungeonObj.doChaos_matchMode()
+    
 
 #开始所有日常
 def startDaily(startRole):
@@ -584,6 +603,10 @@ def startDaily(startRole):
             #breakStone
             if botStatesObj.Characters[curChar]["breakStone"] and botStatesObj.statesConfig["enableBreakStone"]:
                 doBreakStoneDaily(botStatesObj)
+
+            if botStatesObj.Characters[curChar]["chaos"] and botStatesObj.statesConfig["enableChaos"]:
+                doChaosDaily(botStatesObj)                
+            
                 
             botStatesObj.statesConfig["finishedCharacter"] = botStatesObj.statesConfig["finishedCharacter"]+1
             
@@ -618,7 +641,7 @@ def startDaily(startRole):
     botStatesObj.logger.info("All daily task finished ")            
 
 if __name__ == "__main__":
-    startRole = 1
+    startRole = 0
     startDaily(startRole)
 
 

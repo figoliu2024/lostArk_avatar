@@ -466,26 +466,26 @@ if __name__ == '__main__':
     # h = 3
     # l = 204
     # s = 115
-    targetColorLow=[80,10,200]
-    targetColorUp=[110,100,255]
-    teamColorLow = [100,80,125]
-    teamColorUp = [109,200,255]
-    teamoutline =[4,4]
-    destSliceColorLow=[0,0,220]  #小地图上命运片段颜色
-    destSliceColorUp =[20,18,255]
-    chaosTowerColorLow= [170,76,190]
-    chaosTowerColorUp = [190,200,255]
-    chaosTowerOutline = [2,2]
-    teamHpColorLow = [85,180,160]
-    teamHpColorUp  = [95,255,200]
+    # targetColorLow=[80,10,200]
+    # targetColorUp=[110,100,255]
+    # teamColorLow = [100,80,125]
+    # teamColorUp = [109,200,255]
+    # teamoutline =[4,4]
+    # destSliceColorLow=[0,0,220]  #小地图上命运片段颜色
+    # destSliceColorUp =[20,18,255]
+    # chaosTowerColorLow= [170,76,190]
+    # chaosTowerColorUp = [190,200,255]
+    # chaosTowerOutline = [2,2]
+    # teamHpColorLow = [85,180,160]
+    # teamHpColorUp  = [95,255,200]
     
-    teamHpOutline=[30,2]
+    # teamHpOutline=[30,2]
     
-    watchColorLow=[70,9,30] #守望者触角颜色m
-    watchColorUp =[110,255,255] #守望者触角颜色m
-    outline = [50,50] #轮廓大小
+    # watchColorLow=[70,9,30] #守望者触角颜色m
+    # watchColorUp =[110,255,255] #守望者触角颜色m
+    # outline = [50,50] #轮廓大小
     
-    role = botStatesObj.UiCoordi["screenCenter"]
+    # role = botStatesObj.UiCoordi["screenCenter"]
     while (1):
         getPixlHSV()
         # getPixlHLS()
@@ -502,11 +502,11 @@ if __name__ == '__main__':
         #         realManSim.manSimMoveTo(tarX,tarY)
         #         time.sleep(2)
         # re = botStatesObj.minimapColorScan(teamColorLow,teamColorUp,teamoutline,'plot')
-        re = botStatesObj.minimapColorScan(chaosTowerColorLow,chaosTowerColorUp,chaosTowerOutline,'plot')
-        if re!= None:
-            (tarX,tarY) = botStatesObj.basicUiCtrlObj.miniMapTargetCal(re)
-            realManSim.manSimMoveTo(tarX,tarY)
-            time.sleep(2)
+        # re = botStatesObj.minimapColorScan(chaosTowerColorLow,chaosTowerColorUp,chaosTowerOutline,'plot')
+        # if re!= None:
+        #     (tarX,tarY) = botStatesObj.basicUiCtrlObj.miniMapTargetCal(re)
+        #     realManSim.manSimMoveTo(tarX,tarY)
+        #     time.sleep(2)
     # re = botStatesObj.isCharc0Check()
     # if ~re:
     #     botStatesObj.switchCharacterTo(0)

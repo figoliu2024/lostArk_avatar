@@ -131,7 +131,47 @@ class chaosCombat(object):
                 #释放成功一次则退出
                 break
 
+    def specClassSkill(self,curClass):
+        '''
+        根据职业不同释放特殊技能
+        '''   
+        match self.curClass:
+            case "Wardancer":
+                self.castSkill("V")
+            case "Artist":
+                
+                realManSim.manSimPressKey("X")
+                time.sleep(0.5)
+                realManSim.manSimPressKey("V")
+            case "Arcanist":
+                realManSim.manSimPressKey("Z")
+                time.sleep(0.5)
+                realManSim.manSimPressKey("X")
+                time.sleep(0.5)
+                realManSim.manSimPressKey("V")                        
+                
+            case _:
+                print("not support"+self.curClass)
+                
+    def checkHealHP(self):
+        '''
+        检查HP血量
+        '''   
+        x,y = self.UiCoordi["lowHp"]
+        r, g, b = pyautogui.pixel(x, y)
+        if r<30:
+            return "lowHp"
+        
+        x,y = self.UiCoordi["midHp"]
+        r, g, b = pyautogui.pixel(x, y)
+        if r<30:
+            return "midHp"
     
+        x,y = self.UiCoordi["highHp"]
+        r, g, b = pyautogui.pixel(x, y)
+        if r<30:
+            return "midHp"
+        
 # ## Test bench 
 if __name__ == "__main__":
     botStatesObj = botPy.botStates()

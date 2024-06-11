@@ -63,6 +63,7 @@ defaultStatesConfig = {
     "enableGuildDonation": True,  # please make sure all your characters have a guild
     "enableRapport": True,  # NOTE: you need to setup bifrost no3 infront of a rapport NPC
     "enableBreakStone": True,
+    "enableChaos": True,
     "floor3Mode": False,  # only enable if you ONLY want to run infinite floor3 clearing
     # Setup your characters below:
     # can setup UP TO 18(0 to 17) characters for daily chaos/lopang/guild stuff
@@ -111,6 +112,9 @@ defaultUiRegions = {
     "loadingUiRegion":[876,912,200,100],
     "rapportRegion":[29,822,200,260],
     "EvnaTaskFinishedCheck":[1556,411,300,460],
+    "hpBarRegion":[612,949,259,28],
+    "specialClassRegion":[853,841,222,225],
+    "chaosStateRegion":[14,34,251,300],
 }
     
 defaultUiCoordi = {
@@ -193,8 +197,12 @@ defaultUiCoordi = {
     "bifrost":[1696,313],
     "roleInMiniMap":[1742,166.5],
     "dailyTasks":[563,301],
-    "moveBoundary_TopLeft":[400,90],
+    "moveBoundary_TopLeft":[400,120],
     "moveBoundary_BottomRigth":[1500,950],
+    "folderChatWindow":[366,739],
+    "lowHp":[685,959],
+    "midHp":[747,959],
+    "highHp":[823,959],
 }
 
 
@@ -204,6 +212,7 @@ defaultCharacters = {
         "class": "Wardancer", #斗魂
         "ilvl-endless": 1540,
         "ilvl-aor": 1540,
+        "chaos":True,
         "lopang": False,
         "guildDonation": True,
         "rapport": True,
@@ -215,6 +224,7 @@ defaultCharacters = {
         "class": "Artist", #墨灵
         "ilvl-endless": 1477,
         "ilvl-aor": 1477,
+        "chaos":True,
         "lopang": False,
         "guildDonation": True,
         "rapport": False,
@@ -227,6 +237,7 @@ defaultCharacters = {
         "class": "Arcanist", #卡牌
         "ilvl-endless": 1430,
         "ilvl-aor": 1430,
+        "chaos":True,
         "lopang": True,
         "guildDonation": True,
         "rapport": True,
@@ -238,6 +249,7 @@ defaultCharacters = {
         "class": "Shadowhunter", #半魔
         "ilvl-endless": 1430,
         "ilvl-aor": 1430,
+        "chaos":False,
         "lopang": True,
         "guildDonation": True,
         "rapport": False,
@@ -249,6 +261,7 @@ defaultCharacters = {
         "class": "fighter",
         "ilvl-endless": 1430,
         "ilvl-aor": 1430,
+        "chaos":False,
         "lopang": True,
         "guildDonation": True,
         "rapport": False,
@@ -260,6 +273,7 @@ defaultCharacters = {
         "class": "Soulfist",
         "ilvl-endless": 800,
         "ilvl-aor": 800,
+        "chaos":False,
         "lopang": False,
         "guildDonation": True,
         "rapport": True,
