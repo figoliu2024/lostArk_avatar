@@ -205,7 +205,12 @@ def doLopang(botStatesObj):
 
 def rapportPlayMusic(botStatesObj):
     #演奏音乐
-    x,y = botStatesObj.basicUiCtrlObj.botPicCheck("fullScreen","playMusic.bmp")
+    re = botStatesObj.basicUiCtrlObj.botPicCheck("fullScreen","playMusic.bmp")
+    if re == None:
+        print("表现情感次数用完")
+        realManSim.manSimPressKey("esc")
+        return False
+    x,y = re
     realManSim.manSimMoveAndLeftClick(x, y)
     time.sleep(1)
     re = botStatesObj.basicUiCtrlObj.botPicCheck("fullScreen","rapportTimesOver.bmp")
@@ -227,7 +232,12 @@ def rapportPlayMusic(botStatesObj):
 
 def rapportShowEmoji(botStatesObj):
     #表现情感
-    x,y = botStatesObj.basicUiCtrlObj.botPicCheck("fullScreen","showEmoji.bmp")
+    re = botStatesObj.basicUiCtrlObj.botPicCheck("fullScreen","showEmoji.bmp")
+    if re == None:
+        print("表现情感次数用完")
+        realManSim.manSimPressKey("esc")
+        return False
+    x,y = re
     realManSim.manSimMoveAndLeftClick(x, y)
     time.sleep(1)
     re = botStatesObj.basicUiCtrlObj.botPicCheck("fullScreen","rapportTimesOver.bmp")
@@ -353,21 +363,21 @@ def acceptBreakStoneDaily(botStatesObj):
         return False
     else:
         #接受解放奴隶任务并直接点击完成
-        re = botStatesObj.basicUiCtrlObj.botPicCheck("EvnaTaskPanel","taskFreeSlaves.bmp")
-        if re != None:
-            x,y = re
-            x = x+832
-            realManSim.manSimMoveAndLeftClick(x, y)
-            time.sleep(1)
-            #点击完成
-            realManSim.manSimMoveAndLeftClick(x, y)
-            time.sleep(1)
+        # re = botStatesObj.basicUiCtrlObj.botPicCheck("EvnaTaskPanel","taskFreeSlaves.bmp")
+        # if re != None:
+        #     x,y = re
+        #     x = x+832
+        #     realManSim.manSimMoveAndLeftClick(x, y)
+        #     time.sleep(1)
+        #     #点击完成
+        #     realManSim.manSimMoveAndLeftClick(x, y)
+        #     time.sleep(1)
             
-            botStatesObj.basicUiCtrlObj.clickOkButton()
-        else:
-            botStatesObj.logger.error("charctor[%s]-> didn't find BreakStone task" %botStatesObj.statesConfig["currentCharacter"] )
-            botStatesObj.basicUiCtrlObj.cleanUi()
-            return False
+        #     botStatesObj.basicUiCtrlObj.clickOkButton()
+        # else:
+        #     botStatesObj.logger.error("charctor[%s]-> didn't find BreakStone task" %botStatesObj.statesConfig["currentCharacter"] )
+        #     botStatesObj.basicUiCtrlObj.cleanUi()
+        #     return False
         #接受日常2
         re = botStatesObj.basicUiCtrlObj.botPicCheck("EvnaTaskPanel","taskWatchman.bmp")
         if re != None:
@@ -641,7 +651,7 @@ def startDaily(startRole):
     botStatesObj.logger.info("All daily task finished ")            
 
 if __name__ == "__main__":
-    startRole = 0
+    startRole = 4
     startDaily(startRole)
 
 

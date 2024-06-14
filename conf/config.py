@@ -90,7 +90,7 @@ defaultStatesConfig = {
     "portalPause": 700,
     "gameLoadingTime": 10, #游戏读条时间，根据机器性能修改
     "picPath":"./res/pic/",
-    "supportClass":["Wardancer","Artist","Arcanist"],   
+    "supportClass":["Wardancer","Artist","Arcanist","Demonic"],   
 }
 
 
@@ -198,7 +198,7 @@ defaultUiCoordi = {
     "roleInMiniMap":[1742,166.5],
     "dailyTasks":[563,301],
     "moveBoundary_TopLeft":[400,120],
-    "moveBoundary_BottomRigth":[1500,950],
+    "moveBoundary_BottomRigth":[1500,900],
     "folderChatWindow":[366,739],
     "lowHp":[685,959],
     "midHp":[747,959],
@@ -246,10 +246,10 @@ defaultCharacters = {
     },         
     "charc3":{
         "index": 3,
-        "class": "Shadowhunter", #半魔
+        "class": "Demonic", #半魔
         "ilvl-endless": 1430,
         "ilvl-aor": 1430,
-        "chaos":False,
+        "chaos":True,
         "lopang": True,
         "guildDonation": True,
         "rapport": False,

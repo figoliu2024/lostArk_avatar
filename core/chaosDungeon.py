@@ -158,7 +158,11 @@ class chaosDungeon(object):
             self.botStatesObj.basicUiCtrlObj.clickAgreeButton()
             re = self.botStatesObj.basicUiCtrlObj.waitBlackGameLoding()
             if not re:
-                exit()
+                # exit()
+                re = self.botPicCheck("inTownCheck","inTown.bmp")
+                if re!=None:
+                    self.logger.info("game loading finished")
+                    time.sleep(1)
             return True
         
         return False
@@ -416,6 +420,8 @@ class chaosDungeon(object):
                         time.sleep(0.5)
                         realManSim.manSimPressKey("V")                        
                     case _:
+                        time.sleep(0.5)
+                        realManSim.manSimPressKey("V")     
                         print("not support current class")
                 randCastTime = time.time()
            

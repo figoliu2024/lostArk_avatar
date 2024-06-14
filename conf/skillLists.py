@@ -261,3 +261,81 @@ Arcanist = {
     },
     "combolist":["R","F","S","D","Q","W","A","Q","V"],
 }
+
+
+
+Demonic = {
+    "Q":{
+        "abilityType": "normal",
+        "hold": False,
+        "holdTime": None,
+        "cast": False,
+        "castTime": 300,
+        "directional": True,
+    },
+    "W":{
+        "abilityType": "normal",
+        "hold": False,
+        "holdTime": None,
+        "cast": False,
+        "castTime": 300,
+        "directional": True,
+    },
+    "E":{
+       "abilityType": "normal",
+        "hold": False,
+        "holdTime": None,
+        "cast": False,
+        "castTime": 300,
+        "directional": True,
+    },
+    "R":{
+       "abilityType": "normal",
+        "hold": True,
+        "holdTime": 1000,
+        "cast": False,
+        "castTime": None,
+        "directional": True,
+    },
+    "A":{
+       "abilityType": "normal",
+        "hold": False,
+        "holdTime": None,
+        "cast": False,
+        "castTime": 300,
+        "directional": True,
+    },
+    "S":{
+       "abilityType": "normal",
+        "hold": False,
+        "holdTime": None,
+        "cast": False,
+        "castTime": 300,
+        "directional": True,
+    },
+    "D": {
+       "abilityType": "normal",
+        "hold": False,
+        "holdTime": None,
+        "cast": False,
+        "castTime": 300,
+        "directional": False,
+    },
+    "F":{
+       "abilityType": "normal",
+        "hold": False,
+        "holdTime": None,
+        "cast": False,
+        "castTime": 300,
+        "directional": True,
+    },
+    "V":{
+        "abilityType": "awakening",
+        "hold": False,
+        "holdTime": None,
+        "cast": False,
+        "castTime": 2000,
+        "directional": False,
+    },
+    "combolist":["F","D","Q","R","S","E","A","W","V"],
+}

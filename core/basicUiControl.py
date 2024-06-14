@@ -245,8 +245,8 @@ class basicUiCtrl(object):
                 break
             else:
                 curTime = time.time()
-                if curTime-startTime>50:
-                    self.logger.error("stack in game loading stage, bot exist")
+                if curTime-startTime>20:
+                    self.logger.error("stack in 等待进入loading 界面, bot exist")
                     return False
 
         #等待loading界面结束
@@ -259,8 +259,8 @@ class basicUiCtrl(object):
                 break
             else:
                 curTime = time.time()
-                if curTime-startTime>50:
-                    self.logger.error("stack in game loading stage, bot exist")
+                if curTime-startTime>20:
+                    self.logger.error("stack in 等待loading界面结束, bot exist")
                     return False
         
         return True
