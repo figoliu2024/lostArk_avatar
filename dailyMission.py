@@ -651,7 +651,7 @@ def startDaily(startRole):
     botStatesObj.logger.info("All daily task finished ")            
 
 if __name__ == "__main__":
-    startRole = 3
+    startRole = 0
     startDaily(startRole)
 
 
