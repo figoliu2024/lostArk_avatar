@@ -502,7 +502,12 @@ class feidunMove(object):
             y = k[1]
             print("move to the [x:%d y:%d] "%(x,y))
             realManSim.manSimMoveAndRightClick(x, y)
-            time.sleep(4)            
+            time.sleep(3)            
+            re = self.basicUiCtrlObj.botPicCheck("inTownCheck", "inTown.bmp")
+            if re == None:
+                #检查切屏
+                time.sleep(10)
+            
 
     def runToblackHawkHotelToThirdPoint(self):
         '''

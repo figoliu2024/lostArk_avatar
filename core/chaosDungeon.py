@@ -159,7 +159,7 @@ class chaosDungeon(object):
             re = self.botStatesObj.basicUiCtrlObj.waitBlackGameLoding()
             if not re:
                 # exit()
-                re = self.botPicCheck("inTownCheck","inTown.bmp")
+                re = self.botStatesObj.basicUiCtrlObj.botPicCheck("inTownCheck","inTown.bmp")
                 if re!=None:
                     self.logger.info("game loading finished")
                     time.sleep(1)
