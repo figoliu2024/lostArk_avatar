@@ -82,11 +82,13 @@ def acceptLopangDaily(botStatesObj):
     if re==None:
         #切换至收藏夹标签
         re = botStatesObj.basicUiCtrlObj.botPicCheck("fullScreen","allTaskLists.bmp")
-        x,y = re
-        realManSim.manSimMoveAndLeftClick(x, y)
+        if re != None:
+            x,y = re
+            realManSim.manSimMoveAndLeftClick(x, y)
         re = botStatesObj.basicUiCtrlObj.botPicCheck("fullScreen","favoritesTaskListsInTab.bmp")
-        x,y = re
-        realManSim.manSimMoveAndLeftClick(x, y)
+        if re != None:
+            x,y = re
+            realManSim.manSimMoveAndLeftClick(x, y)
         time.sleep(2)
     
     #判断角色是否已经完成日常

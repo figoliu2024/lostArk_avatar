@@ -11,7 +11,7 @@ from core import realManSim
 from core import botStates as botPy
 from lib import libMathFigo
 from core import basicUiControl as BUCPy
-
+from conf import skillLists
 
 
 
@@ -143,6 +143,7 @@ class chaosCombat(object):
                 realManSim.manSimPressKey("X")
                 time.sleep(0.5)
                 realManSim.manSimPressKey("V")
+                self.castSkill("V")
             case "Arcanist":
                 realManSim.manSimPressKey("Z")
                 time.sleep(0.5)
@@ -178,7 +179,7 @@ if __name__ == "__main__":
     botStatesObj.initBot()
     botStatesObj.chaosCombatObj.saveSkillBarNoCDImage()
     
-    botStatesObj.chaosCombatObj.loadSkill(botStatesObj.skill_Wardancer)
+    botStatesObj.chaosCombatObj.loadSkill(skillLists.Wardancer)
     
     while(1):
         botStatesObj.chaosCombatObj.comboListCast()

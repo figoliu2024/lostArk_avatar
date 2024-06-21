@@ -124,7 +124,7 @@ class basicUiCtrl(object):
         '''
         re = pyautogui.locateCenterOnScreen(
             self.picPath+pic,
-            confidence=0.8,
+            confidence=0.9,
             region=self.UiRegions[regionName],
         )
         
@@ -200,7 +200,7 @@ class basicUiCtrl(object):
         '''
         
         self.logger.info("wait game loading" )
-        time.sleep(5)
+        # time.sleep(1)
         #等待进入loading 界面
         startTime = time.time()
         while(1):

@@ -288,6 +288,8 @@ class chaosDungeon(object):
                     
             ##攻击目标
             self.botStatesObj.chaosCombatObj.comboListCast()
+            self.botStatesObj.chaosCombatObj.comboListCast()
+            self.botStatesObj.chaosCombatObj.comboListCast()
             
             #检查是否掉落率命运片段
             self.checkAndPickDestinySlice()
@@ -338,6 +340,8 @@ class chaosDungeon(object):
                         realManSim.manSimPressKey("V")
                     case _:
                         print("not support current class")
+                        time.sleep(0.5)
+                        realManSim.manSimPressKey("V")
                 randCastTime = time.time()
             
     def doChaosFloor2_matchMode(self):
@@ -373,7 +377,7 @@ class chaosDungeon(object):
                 if re!=None:
                     distance = libMathFigo.eucliDist(re,role)
                     print(distance)
-                    if distance > 200:
+                    if distance > 300:
                         tarX,tarY = re
                         realManSim.manSimMoveAndRightClick(tarX,tarY)
                         time.sleep(1)
@@ -486,7 +490,7 @@ if __name__ == "__main__":
     chaosDungeonObj.initChaosDungeon(botStatesObj)
     chaosDungeonObj.checkReloadSkill()
     chaosDungeonObj.doChaos_matchMode()
-    chaosDungeonObj.doChaos_matchMode()
+    # chaosDungeonObj.doChaos_matchMode()
     # chaosDungeonObj.checkChaosFinished()
     
     
